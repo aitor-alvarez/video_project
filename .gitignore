@@ -4,4 +4,6 @@
 *.json
 .idea/
 *.sqlite3
+video/migrations/
+creds/
 

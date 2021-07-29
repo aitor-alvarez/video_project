@@ -3,6 +3,7 @@ from pydub import AudioSegment
 from google.cloud import storage
 import datetime
 from webvtt import WebVTT, Caption
+import boto3
 
 
 def process_speech_to_txt(path, lang):
@@ -51,11 +52,11 @@ def extract_audio_from_video(video_path):
 		output_file = video_path.replace('mp4', 'flac')
 		try:
 			AudioSegment.from_file(video_path).export(output_file, format='flac')
-			return output_file
+			return {'file': output_file, 'status':1}
 		except:
-			return "There has been an error with your audio file. The file might be corrupted or damaged."
+			return {'txt': "There has been an error with your audio file. The file might be corrupted or damaged.", 'status':0}
 	else:
-		return "This video file is not in mp4 format"
+		return {'txt': "This video file is not in mp4 format", 'status':0}
 
 
 
@@ -119,8 +120,13 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 			index += 1
 		except IndexError:
 			pass
-
 		return vtt
+
+
+def s3_upload_file_to_bucket(file, bucket, Key, metadata):
+	client = boto3.client('s3')
+	response = client.upload_file(file, bucket, Key, ExtraArgs=metadata)
+	return response
 
 
 

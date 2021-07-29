@@ -45,8 +45,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 
 class Video(models.Model):
-	title = models.CharField(max_length=255)
-	access_code = models.CharField(max_length=255)
+	title = models.CharField(max_length=255, blank=False)
+	url = models.URLField(blank=True)
+	pid = models.CharField(max_length=255, blank=True)
+	metadata = models.TextField(blank=True)
+	access_code = models.CharField(max_length=255, blank=True)
 	description = models.TextField()
 	type = models.CharField(max_length=1, choices=video_types)
 	is_showcase = models.BooleanField(default=0)
