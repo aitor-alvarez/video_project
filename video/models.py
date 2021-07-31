@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.functions import Now
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+import datetime
 
 video_types = (
 	('I', 'Interview'),
@@ -32,7 +33,7 @@ class Profile(models.Model):
 	last_name = models.CharField(max_length=255)
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	type = models.CharField(max_length=1, choices=user_choices, blank=True, default='C')
-	institution = models.ForeignKey('Institution', on_delete=models.CASCADE)
+	institution = models.ForeignKey('Institution', blank=True, null=True, on_delete=models.CASCADE)
 
 	def __str__(self):
 		return self.user.username
@@ -57,7 +58,7 @@ class Video(models.Model):
 	owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
 	event = models.ForeignKey('Event', on_delete=models.CASCADE)
 	duration = models.IntegerField()
-	created = models.DateTimeField(default=Now())
+	created = models.DateTimeField(default=datetime.datetime.now())
 
 	def __str__(self):
 		return self.title

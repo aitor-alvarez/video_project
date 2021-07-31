@@ -1,12 +1,14 @@
-from .models import *
-from django.shortcuts import render, get_list_or_404, get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from utils.utils import *
-from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from botocore.exceptions import ClientError
 import logging
+from .models import *
+from django.views.generic.edit import FormView
+from .forms import VideoForm
+from django.http import HttpResponse
+
 
 @login_required
 def showcase_videos(request):
@@ -14,23 +16,42 @@ def showcase_videos(request):
 	return render(request, 'videos/home.html', {'videos': videos})
 
 
-@login_required
-def upload_video(request):
-	if request.method == 'POST':
-		video_file = request.FILES.get('file', '')
-		lang = request.POST.get('language', '')
-		try:
-			s3_response = s3_upload_file_to_bucket(video_file, 'videos-techcenter')
-			audio_file = extract_audio_from_video(video_file)
-			if audio_file is not None:
-				del video_file
-				file_url = upload_to_gcs(audio_file, 'flagship-videos')
-				speech_txt = process_speech_to_txt(file_url, lang)
-				vtt_obj = generate_vtt_caption(speech_txt)
+def video_upload_view(request):
+	form = VideoForm()
+	profile = Profile.objects.get(user=request.user)
+	if profile is not None and Program.objects.filter(students__in=[profile]).exists():
+		program = Program.objects.filter(students__in=[profile])
+		return render(request, 'videos/upload_video.html', {"form": form, 'program': program})
+	else:
+		return render(request, 'videos/upload_video.html', {"error": 'Your user is not associated with a program.'})
 
-		except ClientError as e:
-			logging.error(e)
-			return False
+
+def upload_form_ajax(request):
+		form = VideoForm()
+		if request.is_ajax and request.method == "POST":
+			# get the form data
+			form = VideoForm(request.POST)
+			instance = form
+			if form.is_valid():
+				instance = form.save(commit=False)
+				print(instance['video_file'])
+				print(instance['language'])
+			try:
+				video_file = instance['video_file']
+				s3_response = s3_upload_file_to_bucket(video_file, 'videos-techcenter')
+				print(s3_response)
+				instance['url'] = s3_response
+				audio_file = extract_audio_from_video(video_file)
+				if audio_file is not None:
+					file_url = upload_to_gcs(audio_file, 'flagship-videos')
+					speech_txt = process_speech_to_txt(file_url, instance['language'])
+					vtt_obj = generate_vtt_caption(speech_txt)
+					return JsonResponse()
+
+			except ClientError as e:
+				return JsonResponse({'error': e})
+
+
 
 
 

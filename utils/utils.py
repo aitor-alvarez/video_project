@@ -125,7 +125,7 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 
 def s3_upload_file_to_bucket(file, bucket, Key, metadata):
 	client = boto3.client('s3')
-	response = client.upload_file(file, bucket, Key, ExtraArgs=metadata)
+	response = client.upload_file(file, bucket, Key, ExtraArgs={metadata})
 	return response
 
 

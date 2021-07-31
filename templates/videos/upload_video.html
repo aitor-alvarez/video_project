@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<form id="video_form" method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <input name="language" type="hidden" value="{{ program.language.language_code }}" >
+    <input type="submit" name="submit" value="submit">
+</form>
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+$(document).ready(function() {
+
+    $("#video_form").on('submit', function (e) {
+        alert(e);
+        // preventing from page reload and default actions
+        e.preventDefault();
+        // serialize the data for sending the form data.
+        var serializedData = $(this).serialize();
+        // make POST ajax call
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/upload/',
+            data: serializedData,
+            "X-CSRFToken": '{{ csrf_token }}',
+            success: function (response) {
+                console.log(response);
+
+            },
+            error: function error(response) {
+                // alert the error if any error occured
+                alert(response["responseJSON"]["error"]);
+            }
+        })
+    })
+})
+</script>
+{% endblock javascript %}

@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from video.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+		path('upload/', video_upload_view),
+		path('ajax/upload/', upload_form_ajax, name="ajax_upload")
 ]
