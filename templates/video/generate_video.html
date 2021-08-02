@@ -12,16 +12,14 @@
 {% block javascript %}
 <script>
 
-
-
-    $("#transcription").on('click', function (e) {
-        e.preventDefault();
-
-          $.ajax({
+function generate_transcript(){
+    console.log('automatic speech-to-text recognition....')
+     $.ajax({
                 type : "POST",
-                url: "/ajax/upload_video/",
+                url: "/ajax/transcribe/",
                 data: {
-                 id : '{{ video.id }}',
+                 video_file : '{{ video.file }}',
+                 language : '{{ video.language }}',
                  csrfmiddlewaretoken: '{{ csrf_token }}',
                  dataType: "json",
 
@@ -34,9 +32,34 @@
                 failure: function(error) {
                     alert(error);
                 }
+            });
+}
+
+    $("#transcription").on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+                type : "POST",
+                url: "/ajax/upload_video/",
+                data: {
+                 id : '{{ video.id }}',
+                 csrfmiddlewaretoken: '{{ csrf_token }}',
+                 dataType: "json",
+
+                },
+
+                success: function(data){
+                   console.log(data['msg']);
+                   generate_transcript();
+                },
+
+                failure: function(error) {
+                    alert(error);
+                }
 
 
             });
+
+
     })
 </script>
 {% endblock  %}

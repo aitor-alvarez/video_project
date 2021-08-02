@@ -71,14 +71,16 @@ def extract_audio_and_transcript(request):
 	if request.is_ajax():
 		video_file = request.POST.get('video_file', None)
 		language = request.POST.get('language', None)
-		audio_file = extract_audio_from_video(video_file)
+		audio_file = extract_audio_from_video(video_file.split('/')[-1])
 		if audio_file is not None:
-			file_url = upload_to_gcs(audio_file, 'flagship-videos')
+			file_url, blob = upload_to_gcs(audio_file, 'flagship-videos')
 			speech_txt_response = process_speech_to_txt(file_url, language)
 			if speech_txt_response:
 				vtt_path = generate_vtt_caption(speech_txt_response)
 				if vtt_path is not None:
 					os.remove(video_file)
+					os.remove(audio_file)
+					#blob.delete()
 					response = {
 						'msg': 'Transcript generated successfully.'}
 				else:
@@ -88,6 +90,8 @@ def extract_audio_and_transcript(request):
 			else:
 				response = {
 					'msg': 'The video file has some errors and audio could not be extracted.'}
+		else:
+			response=audio_file
 		return JsonResponse(response)
 
 

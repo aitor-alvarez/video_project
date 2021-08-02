@@ -16,15 +16,16 @@ def process_speech_to_txt(path, lang):
 	audio = speech.RecognitionAudio(path)
 	config = speech.RecognitionConfig(
 		encoding=speech.RecognitionConfig.AudioEncoding.FLAC,
+		audio_channel_count = 2,
 		language_code=lang,
+		enable_word_time_offsets=True
 	)
-	response = client.recognize(config=config, audio=audio)
-	## print results
-	for i, result in enumerate(response.results):
-		alternative = result.alternatives[0]
-		print("-" * 20)
-		print("First alternative of result {}".format(i))
-		print(u"Transcript: {}".format(alternative.transcript))
+	operation = client.long_running_recognize(config=config, audio=audio)
+	response = operation.result(timeout=360)
+	for result in response.results:
+		# The first alternative is the most likely one for this portion.
+		print(u"Transcript: {}".format(result.alternatives[0].transcript))
+		print("Confidence: {}".format(result.alternatives[0].confidence))
 	return response
 
 
@@ -37,9 +38,9 @@ def upload_to_gcs(audio_file, bucket_name):
 		blob = bucket.blob(audio_file)
 		try:
 			blob.upload_from_filename(audio_file)
-			return ({'url':url, 'status':1})
+			return url, blob
 		except:
-			return ({'txt': "File was not uploaded. There seems to be a problem with your file.", 'status': 0})
+			return "File was not uploaded. There seems to be a problem with your file."
 	else:
 		bucket = storage_client.create_bucket(bucket_name)
 		print("Bucket {} created.".format(bucket.name))
@@ -47,34 +48,33 @@ def upload_to_gcs(audio_file, bucket_name):
 		blob = bucket.blob(audio_file)
 		try:
 			blob.upload_from_filename(audio_file)
-			return ({'url':url, 'status':1})
+			return url, blob
 		except:
-			return ({'txt':"File was not uploaded. There seems to be a problem with your file.", 'status':0})
+			return "File was not uploaded. There seems to be a problem with your file."
 
 
 
-def extract_audio_from_video(video_path):
-	if video_path.endswith('.mp4'):
-		audiofile = AudioSegment.from_file(video_path)
-		output_file = 'tmp/audio/'+video_path.replace('mp4', 'flac')
+def extract_audio_from_video(video_name):
+	if video_name.endswith('.mp4'):
+		output_file = 'tmp/audio/'+video_name.replace('mp4', 'flac')
 		try:
-			AudioSegment.from_file(video_path).export(output_file, format='flac')
-			return {'file': output_file, 'status':1}
+			AudioSegment.from_file('tmp/video/'+video_name).export(output_file, format='flac')
+			return output_file
 		except:
-			return {'txt': "There has been an error with your audio file. The file might be corrupted or damaged.", 'status':0}
+			return "There has been an error with your audio file. The file might be corrupted or damaged."
 	else:
-		return {'txt': "This video file is not in mp4 format", 'status':0}
+		return  "This video file is not in mp4 format"
 
 
 def generate_vtt_caption(speech_txt_response, bin=3):
 	vtt = WebVTT()
 	index = 0
-	for result in speech_txt_response:
+	for result in speech_txt_response.results:
 		try:
 			if result.alternatives[0].words[0].start_time.seconds:
 				# bin start -> for first word of result
 				start_sec = result.alternatives[0].words[0].start_time.seconds
-				start_microsec = result.alternatives[0].words[0].start_time.nanos * 0.001
+				start_microsec = result.alternatives[0].words[0].start_time.seconds
 			else:
 				# bin start -> For First word of response
 				start_sec = 0
@@ -83,7 +83,7 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 
 			# for last word of result
 			last_word_end_sec = result.alternatives[0].words[-1].end_time.seconds
-			last_word_end_microsec = result.alternatives[0].words[-1].end_time.nanos * 0.001
+			last_word_end_microsec = result.alternatives[0].words[-1].end_time.seconds
 
 			# bin transcript
 			transcript = result.alternatives[0].words[0].word
@@ -95,15 +95,15 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 					word = result.alternatives[0].words[i + 1].word
 					word_start_sec = result.alternatives[0].words[i + 1].start_time.seconds
 					word_start_microsec = result.alternatives[0].words[
-						                      i + 1].start_time.nanos * 0.001  # 0.001 to convert nana -> micro
+						                      i + 1].start_time.seconds    # 0.001 to convert nana -> micro
 					word_end_sec = result.alternatives[0].words[i + 1].end_time.seconds
-					word_end_microsec = result.alternatives[0].words[i + 1].end_time.nanos * 0.001
+					word_end_microsec = result.alternatives[0].words[i + 1].end_time.seconds
 
 					if word_end_sec < end_sec:
 						transcript = transcript + " " + word
 					else:
 						previous_word_end_sec = result.alternatives[0].words[i].end_time.seconds
-						previous_word_end_microsec = result.alternatives[0].words[i].end_time.nanos * 0.001
+						previous_word_end_microsec = result.alternatives[0].words[i].end_time.seconds
 
 						# append bin transcript
 						caption = Caption(datetime.timedelta(0, start_sec, start_microsec),
@@ -123,7 +123,7 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 			# append transcript of last transcript in bin
 			vtt.captions.append(Caption(datetime.timedelta(0, start_sec, start_microsec),
 			                                   datetime.timedelta(0, last_word_end_sec, last_word_end_microsec), transcript))
-			vtt.save('my_captions.vtt')
+			print(vtt)
 		except IndexError:
 			pass
 		return vtt
