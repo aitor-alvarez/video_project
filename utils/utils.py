@@ -4,7 +4,11 @@ from google.cloud import storage
 import datetime
 from webvtt import WebVTT, Caption
 import boto3
+from video_project import settings
 
+
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= settings.gcloud_creds
 
 
 def process_speech_to_txt(path, lang):
@@ -125,10 +129,9 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 		return vtt
 
 
-@asyncio.coroutine
 def s3_upload_file_to_bucket(file, bucket, Key, metadata):
 	client = boto3.client('s3')
-	response = client.upload_file(file, bucket, Key, ExtraArgs={'Metadata':metadata})
+	response = client.upload_file(file, bucket, Key, {'Metadata':metadata})
 	if response:
 		return response
 

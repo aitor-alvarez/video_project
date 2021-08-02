@@ -8,3 +8,35 @@
     <button id="translation">Generate translation</button>
 
 {% endblock %}
+
+{% block javascript %}
+<script>
+
+
+
+    $("#transcription").on('click', function (e) {
+        e.preventDefault();
+
+          $.ajax({
+                type : "POST",
+                url: "/ajax/upload_video/",
+                data: {
+                 id : '{{ video.id }}',
+                 csrfmiddlewaretoken: '{{ csrf_token }}',
+                 dataType: "json",
+
+                },
+
+                success: function(data){
+                   alert(data['msg']);
+                },
+
+                failure: function(error) {
+                    alert(error);
+                }
+
+
+            });
+    })
+</script>
+{% endblock  %}

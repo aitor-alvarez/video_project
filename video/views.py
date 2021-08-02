@@ -13,6 +13,7 @@ from django.views.generic.edit import CreateView
 import asyncio
 import os
 import uuid
+from botocore.exceptions import ClientError
 
 
 @login_required
@@ -29,17 +30,16 @@ class VideoView(CreateView):
 
 		def form_valid(self, form):
 			video_form = form.save(commit=False)
-			access_code = uuid.uuid4().hex
 			last_id = Video.objects.latest('id')
-			pid = int(last_id.id)+1
+			pid = last_id.id+1
 			profile = Profile.objects.get(user=self.request.user)
 			program = Program.objects.get(students__in=[profile])
 			language = program.language.language_code
+			video_form.access_code = uuid.uuid4().hex
 			video_form.owner= profile
 			video_form.language = language
 			video_form.pid = pid
 			video_form.title = profile.first_name+' '+profile.last_name
-			video_form.access_code = access_code
 			video_form.save()
 			return redirect('generate_video', video_id=video_form.id)
 
@@ -52,37 +52,42 @@ def generate_video(request, video_id):
 		return HttpResponse("You are not authorized to access this video")
 
 
-def upload_video_s3(id):
-	video = Video.objects.get(id)
-	s3_response = s3_upload_file_to_bucket(video.file, 'videos-techcenter', 'videos/' + str(video.access_code) + '.mp4',
-	                         {'pid': video.pid, 'access_code': video.access_code, 'language': video.language})
-	if s3_response:
-		response = {
-			'msg': 'Video uploaded successfully.'}
-	else:
-		response = {
-			'msg': 'The video file has some errors and audio could not be extracted.'}
-	return JsonResponse(response)
+def upload_video_s3(request):
+	if request.is_ajax():
+		id = request.POST.get('id', None)
+		video = Video.objects.get(id=id)
+		try:
+			s3_upload_file_to_bucket(str(video.file), 'videos-techcenter', 'videos/' + str(video.access_code) + '.mp4',
+		                         {'ContentType':'video/mp4','pid': str(video.pid), 'access_code': str(video.access_code), 'language': video.language})
+			response = {
+				'msg': 'Video uploaded successfully.'}
+		except ClientError as e:
+			response = {
+				'msg': e}
+		return JsonResponse(response)
 
 
-def extract_audio_and_transcript(video_file, language):
-	audio_file = extract_audio_from_video(video_file)
-	if audio_file is not None:
-		file_url = upload_to_gcs(audio_file, 'flagship-videos')
-		speech_txt_response = process_speech_to_txt(file_url, language)
-		if speech_txt_response:
-			vtt_path = generate_vtt_caption(speech_txt_response)
-			if vtt_path is not None:
-				os.remove(video_file)
-				response = {
-					'msg': 'Transcript generated successfully.'}
+def extract_audio_and_transcript(request):
+	if request.is_ajax():
+		video_file = request.POST.get('video_file', None)
+		language = request.POST.get('language', None)
+		audio_file = extract_audio_from_video(video_file)
+		if audio_file is not None:
+			file_url = upload_to_gcs(audio_file, 'flagship-videos')
+			speech_txt_response = process_speech_to_txt(file_url, language)
+			if speech_txt_response:
+				vtt_path = generate_vtt_caption(speech_txt_response)
+				if vtt_path is not None:
+					os.remove(video_file)
+					response = {
+						'msg': 'Transcript generated successfully.'}
+				else:
+					response = {
+						'msg': 'The video file has some errors and audio could not be extracted.'}
+				return JsonResponse(response)
 			else:
 				response = {
 					'msg': 'The video file has some errors and audio could not be extracted.'}
-			return JsonResponse(response)
-		else:
-			response = {
-				'msg': 'The video file has some errors and audio could not be extracted.'}
 		return JsonResponse(response)
 
 
