@@ -4,8 +4,9 @@ from django import forms
 
 
 class VideoForm(ModelForm):
-	video_file = forms.FileField()
+	title = forms.HiddenInput()
 	language = forms.HiddenInput()
+	owner = forms.HiddenInput()
 
 	def __init__(self, *args, **kwargs):
 		super(VideoForm, self).__init__(*args, **kwargs)
@@ -16,6 +17,6 @@ class VideoForm(ModelForm):
 
 	class Meta:
 		model = Video
-		exclude =('created',)
+		exclude =('created', 'metadata', 'url', 'pid', 'access_code', 'duration', 'is_showcase', 'title', 'owner')
 
 

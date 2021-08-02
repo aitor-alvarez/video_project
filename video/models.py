@@ -11,11 +11,6 @@ video_types = (
 	('Q', 'Presentation and Q&A'),
 )
 
-visibility_type = (
-	('I', 'Internal'),
-	('P', 'Public'),
-)
-
 phases = (
 	('F', 'Final'),
 	('M', 'Mid-Program'),
@@ -46,18 +41,20 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 
 class Video(models.Model):
-	title = models.CharField(max_length=255, blank=False)
+	title = models.CharField(max_length=255, blank=True)
+	file = models.FileField( upload_to='tmp/video/',blank=True, null=True)
+	language = models.CharField(max_length=255, blank=True)
 	url = models.URLField(blank=True)
 	pid = models.CharField(max_length=255, blank=True)
 	metadata = models.TextField(blank=True)
 	access_code = models.CharField(max_length=255, blank=True)
-	description = models.TextField()
 	type = models.CharField(max_length=1, choices=video_types)
 	is_showcase = models.BooleanField(default=0)
-	visibility = models.CharField(max_length=1, choices=visibility_type)
+	is_public = models.BooleanField(default=0)
+	is_internal = models.BooleanField(default=0)
 	owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
 	event = models.ForeignKey('Event', on_delete=models.CASCADE)
-	duration = models.IntegerField()
+	duration = models.IntegerField(null=True, blank=True)
 	created = models.DateTimeField(default=datetime.datetime.now())
 
 	def __str__(self):

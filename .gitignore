@@ -6,4 +6,5 @@
 *.sqlite3
 video/migrations/
 creds/
+tmp/
 

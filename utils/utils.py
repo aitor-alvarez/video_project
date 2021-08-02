@@ -6,6 +6,7 @@ from webvtt import WebVTT, Caption
 import boto3
 
 
+
 def process_speech_to_txt(path, lang):
 	client = speech.SpeechClient()
 	audio = speech.RecognitionAudio(path)
@@ -20,6 +21,7 @@ def process_speech_to_txt(path, lang):
 		print("-" * 20)
 		print("First alternative of result {}".format(i))
 		print(u"Transcript: {}".format(alternative.transcript))
+	return response
 
 
 #Upload file to gcs
@@ -46,10 +48,11 @@ def upload_to_gcs(audio_file, bucket_name):
 			return ({'txt':"File was not uploaded. There seems to be a problem with your file.", 'status':0})
 
 
+
 def extract_audio_from_video(video_path):
 	if video_path.endswith('.mp4'):
 		audiofile = AudioSegment.from_file(video_path)
-		output_file = video_path.replace('mp4', 'flac')
+		output_file = 'tmp/audio/'+video_path.replace('mp4', 'flac')
 		try:
 			AudioSegment.from_file(video_path).export(output_file, format='flac')
 			return {'file': output_file, 'status':1}
@@ -57,7 +60,6 @@ def extract_audio_from_video(video_path):
 			return {'txt': "There has been an error with your audio file. The file might be corrupted or damaged.", 'status':0}
 	else:
 		return {'txt': "This video file is not in mp4 format", 'status':0}
-
 
 
 def generate_vtt_caption(speech_txt_response, bin=3):
@@ -117,16 +119,18 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 			# append transcript of last transcript in bin
 			vtt.captions.append(Caption(datetime.timedelta(0, start_sec, start_microsec),
 			                                   datetime.timedelta(0, last_word_end_sec, last_word_end_microsec), transcript))
-			index += 1
+			vtt.save('my_captions.vtt')
 		except IndexError:
 			pass
 		return vtt
 
 
+@asyncio.coroutine
 def s3_upload_file_to_bucket(file, bucket, Key, metadata):
 	client = boto3.client('s3')
-	response = client.upload_file(file, bucket, Key, ExtraArgs={metadata})
-	return response
+	response = client.upload_file(file, bucket, Key, ExtraArgs={'Metadata':metadata})
+	if response:
+		return response
 
 
 
