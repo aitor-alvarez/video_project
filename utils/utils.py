@@ -5,10 +5,11 @@ import datetime
 from webvtt import WebVTT, Caption
 import boto3
 from video_project import settings
+from datetime import timedelta
 
 
 import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= settings.gcloud_creds
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= "creds/gcloud/fvp-video-project-5b3210cd59f6.json"
 
 
 def process_speech_to_txt(path, lang):
@@ -22,10 +23,10 @@ def process_speech_to_txt(path, lang):
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
 	response = operation.result(timeout=360)
-	for result in response.results:
+	'''for result in response.results:
 		# The first alternative is the most likely one for this portion.
 		print(u"Transcript: {}".format(result.alternatives[0].transcript))
-		print("Confidence: {}".format(result.alternatives[0].confidence))
+		print("Confidence: {}".format(result.alternatives[0].confidence))'''
 	return response
 
 
@@ -66,7 +67,8 @@ def extract_audio_from_video(video_name):
 		return  "This video file is not in mp4 format"
 
 
-def generate_vtt_caption(speech_txt_response, bin=3):
+def generate_vtt_caption(speech_txt_response, bin=4):
+
 	vtt = WebVTT()
 	index = 0
 	for result in speech_txt_response.results:
@@ -106,10 +108,9 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 						previous_word_end_microsec = result.alternatives[0].words[i].end_time.seconds
 
 						# append bin transcript
-						caption = Caption(datetime.timedelta(0, start_sec, start_microsec),
-						                                   datetime.timedelta(0, previous_word_end_sec, previous_word_end_microsec),
-						                                   transcript)
-						vtt.captions.append(caption)
+						init_sec = '0'+str(datetime.timedelta( seconds=start_sec))+'.000'
+						end_sec = '0'+str(datetime.timedelta( seconds=previous_word_end_sec))+'.000'
+						vtt.captions.append(Caption(init_sec, end_sec, transcript))
 
 						# reset bin parameters
 						start_sec = word_start_sec
@@ -121,9 +122,11 @@ def generate_vtt_caption(speech_txt_response, bin=3):
 				except IndexError:
 					pass
 			# append transcript of last transcript in bin
-			vtt.captions.append(Caption(datetime.timedelta(0, start_sec, start_microsec),
-			                                   datetime.timedelta(0, last_word_end_sec, last_word_end_microsec), transcript))
-			print(vtt)
+			init_sec = '0' + str(datetime.timedelta(seconds=start_sec)) + '.000'
+			end_sec = '0' + str(datetime.timedelta(seconds=last_word_end_sec)) + '.000'
+			vtt.captions.append(Caption(init_sec, end_sec, transcript))
+
+			index += 1
 		except IndexError:
 			pass
 		return vtt

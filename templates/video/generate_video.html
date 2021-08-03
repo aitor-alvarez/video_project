@@ -20,6 +20,7 @@ function generate_transcript(){
                 data: {
                  video_file : '{{ video.file }}',
                  language : '{{ video.language }}',
+                 access_code : '{{ video.access_code }}',
                  csrfmiddlewaretoken: '{{ csrf_token }}',
                  dataType: "json",
 

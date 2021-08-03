@@ -71,16 +71,22 @@ def extract_audio_and_transcript(request):
 	if request.is_ajax():
 		video_file = request.POST.get('video_file', None)
 		language = request.POST.get('language', None)
+		access_code = request.POST.get('access_code', None)
 		audio_file = extract_audio_from_video(video_file.split('/')[-1])
 		if audio_file is not None:
 			file_url, blob = upload_to_gcs(audio_file, 'flagship-videos')
 			speech_txt_response = process_speech_to_txt(file_url, language)
 			if speech_txt_response:
-				vtt_path = generate_vtt_caption(speech_txt_response)
-				if vtt_path is not None:
+				vtt_file = generate_vtt_caption(speech_txt_response)
+				if vtt_file is not None:
+					vtt_filename = 'tmp/transcript/'+access_code+'.vtt'
+					vtt_file.save(vtt_filename)
+					s3_upload_file_to_bucket(vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
+					                         {'ContentType': 'video/mp4', 'pid': access_code,
+					                          'access_code': access_code, 'language': language})
 					os.remove(video_file)
 					os.remove(audio_file)
-					#blob.delete()
+					blob.delete()
 					response = {
 						'msg': 'Transcript generated successfully.'}
 				else:
