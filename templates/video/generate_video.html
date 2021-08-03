@@ -2,11 +2,13 @@
 
 {% block content %}
 
-{{ video.file }}
 
-    <button id="transcription">Generate transcription</button>
-    <button id="translation">Generate translation</button>
-
+    {% if error %}
+        <h3>{{ error }}</h3>
+    {% else %}
+        {{ video.file }}
+        <button id="transcription">Generate transcription</button>
+    {% endif %}
 {% endblock %}
 
 {% block javascript %}

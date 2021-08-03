@@ -14,6 +14,7 @@ import asyncio
 import os
 import uuid
 from botocore.exceptions import ClientError
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 @login_required
@@ -22,7 +23,7 @@ def showcase_videos(request):
 	return render(request, 'video/home.html', {'videos': videos})
 
 
-class VideoView(CreateView):
+class VideoView(LoginRequiredMixin, CreateView):
 		model = Video
 		template_name = 'video/video_form.html'
 		success_url = '/'
@@ -44,12 +45,43 @@ class VideoView(CreateView):
 			return redirect('generate_video', video_id=video_form.id)
 
 
+class ProgramView(LoginRequiredMixin, CreateView):
+	model = Program
+	template_name = 'video/program_form.html'
+	fields = ('name', 'start', 'end', 'language', 'program_years')
+	success_url = '/'
+
+	def get_initial(self, *args, **kwargs):
+		profile = Profile.objects.get(user= self.request.user)
+		if profile.type == 'A':
+			initial = super(ProgramView, self).get_initial(**kwargs)
+			return initial
+		else:
+			HttpResponseRedirect('/')
+
+
+@login_required
+def list_programs(request):
+	profile = Profile.objects.get(user=request.user)
+	if profile.type == 'A' or 'B':
+		programs = Program.objects.all()
+		return render(request, 'video/programs.html', {'programs': programs})
+	else:
+		HttpResponseRedirect('/')
+
+
+
 def generate_video(request, video_id):
 	video = Video.objects.get(id=video_id)
 	if request.user == video.owner.user:
-		return render(request, 'video/generate_video.html', {'video': video})
+		if video.is_final == False:
+			return render(request, 'video/generate_video.html', {'video': video})
+		else:
+			error ="This video has been marked as final. You cannot regenerate transcripts or modify it."
+			return render(request, 'video/generate_video.html', {'error': error})
 	else:
-		return HttpResponse("You are not authorized to access this video")
+		error = "You are not authorized to access this video"
+		return render(request, 'video/generate_video.html', {'error': error})
 
 
 def upload_video_s3(request):

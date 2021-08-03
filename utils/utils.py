@@ -162,13 +162,13 @@ def translate_text(text, lang, project_id=getattr(settings, "GCLOUD_PROJECT", No
         request={
             "parent": parent,
             "contents": [text],
-            "mime_type": "text/plain",  # mime types: text/plain, text/html
+            "mime_type": "text/plain",
             "source_language_code": lang,
             "target_language_code": "en-US",
         }
     )
 
-    # Display the translation for each input text provided
+    # Get the translation from the response
     for translation in response.translations:
         return format(translation.translated_text)
 

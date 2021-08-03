@@ -55,6 +55,7 @@ class Video(models.Model):
 	owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
 	event = models.ForeignKey('Event', on_delete=models.CASCADE)
 	duration = models.IntegerField(null=True, blank=True)
+	is_final = models.BooleanField(default=0)
 	created = models.DateTimeField(default=datetime.datetime.now())
 
 	def __str__(self):

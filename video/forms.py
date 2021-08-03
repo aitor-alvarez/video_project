@@ -20,3 +20,4 @@ class VideoForm(ModelForm):
 		exclude =('created', 'metadata', 'url', 'pid', 'access_code', 'duration', 'is_showcase', 'title', 'owner')
 
 
+
