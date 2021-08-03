@@ -4,12 +4,12 @@ from google.cloud import storage
 import datetime
 from webvtt import WebVTT, Caption
 import boto3
-from video_project import settings
-from datetime import timedelta
+from google.cloud import translate
+from django.conf import settings
 
 
 import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= "creds/gcloud/fvp-video-project-5b3210cd59f6.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= getattr(settings, "GCLOUD_CREDS", None)
 
 
 def process_speech_to_txt(path, lang):
@@ -22,11 +22,7 @@ def process_speech_to_txt(path, lang):
 		enable_word_time_offsets=True
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
-	response = operation.result(timeout=360)
-	'''for result in response.results:
-		# The first alternative is the most likely one for this portion.
-		print(u"Transcript: {}".format(result.alternatives[0].transcript))
-		print("Confidence: {}".format(result.alternatives[0].confidence))'''
+	response = operation.result(timeout=660)
 	return response
 
 
@@ -59,17 +55,19 @@ def extract_audio_from_video(video_name):
 	if video_name.endswith('.mp4'):
 		output_file = 'tmp/audio/'+video_name.replace('mp4', 'flac')
 		try:
-			AudioSegment.from_file('tmp/video/'+video_name).export(output_file, format='flac')
+			AudioSegment.from_file('tmp/video/'+video_name).export(output_file, format='flac', channels=2)
 			return output_file
 		except:
-			return "There has been an error with your audio file. The file might be corrupted or damaged."
+			return "There has been an error with your audio file. The file seems to be either mono or is corrupted."
 	else:
 		return  "This video file is not in mp4 format"
 
 
-def generate_vtt_caption(speech_txt_response, bin=4):
+def generate_vtt_caption(speech_txt_response, lang, bin=4):
 
 	vtt = WebVTT()
+	vtt.captions.append('Kind: captions')
+	vtt.captions.append('Language: '+lang)
 	index = 0
 	for result in speech_txt_response.results:
 		try:
@@ -137,6 +135,42 @@ def s3_upload_file_to_bucket(file, bucket, Key, metadata):
 	response = client.upload_file(file, bucket, Key, {'Metadata':metadata})
 	if response:
 		return response
+
+
+def generate_translation(vtt, lang):
+	new_vtt = WebVTT()
+	new_vtt.captions.append('Kind: captions')
+	new_vtt.captions.append('Language: '+lang)
+	for i in range(0, len(vtt.captions)-1):
+		if isinstance(vtt[i], str):
+			pass
+		else:
+			new_txt = translate_text(vtt[i].text, lang)
+			new_vtt.captions.append(Caption(vtt[i].start, vtt[i].end, new_txt))
+	return new_vtt
+
+
+def translate_text(text, lang, project_id=getattr(settings, "GCLOUD_PROJECT", None)):
+
+    client = translate.TranslationServiceClient()
+
+    location = "global"
+
+    parent = f"projects/{project_id}/locations/{location}"
+
+    response = client.translate_text(
+        request={
+            "parent": parent,
+            "contents": [text],
+            "mime_type": "text/plain",  # mime types: text/plain, text/html
+            "source_language_code": lang,
+            "target_language_code": "en-US",
+        }
+    )
+
+    # Display the translation for each input text provided
+    for translation in response.translations:
+        return format(translation.translated_text)
 
 
 

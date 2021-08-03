@@ -60,7 +60,7 @@ def upload_video_s3(request):
 			s3_upload_file_to_bucket(str(video.file), 'videos-techcenter', 'videos/' + str(video.access_code) + '.mp4',
 		                         {'ContentType':'video/mp4','pid': str(video.pid), 'access_code': str(video.access_code), 'language': video.language})
 			response = {
-				'msg': 'Video uploaded successfully.'}
+				'msg': 'The video is ready for audio segmentation.'}
 		except ClientError as e:
 			response = {
 				'msg': e}
@@ -77,12 +77,12 @@ def extract_audio_and_transcript(request):
 			file_url, blob = upload_to_gcs(audio_file, 'flagship-videos')
 			speech_txt_response = process_speech_to_txt(file_url, language)
 			if speech_txt_response:
-				vtt_file = generate_vtt_caption(speech_txt_response)
+				vtt_file = generate_vtt_caption(speech_txt_response, language)
 				if vtt_file is not None:
 					vtt_filename = 'tmp/transcript/'+access_code+'.vtt'
 					vtt_file.save(vtt_filename)
 					s3_upload_file_to_bucket(vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
-					                         {'ContentType': 'video/mp4', 'pid': access_code,
+					                         {'ContentType': 'text/vtt', 'pid': access_code,
 					                          'access_code': access_code, 'language': language})
 					os.remove(video_file)
 					os.remove(audio_file)
