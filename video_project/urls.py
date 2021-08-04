@@ -20,6 +20,7 @@ from video.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
 		path('new/program/', ProgramView.as_view()),
+		path('new/event/<int:program_id>/', EventView.as_view()),
 		path('upload/', VideoView.as_view()),
 		path('ajax/upload_video/', upload_video_s3),
 		path('ajax/transcribe/', extract_audio_and_transcript),

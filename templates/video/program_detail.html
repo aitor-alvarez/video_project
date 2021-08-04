@@ -6,6 +6,12 @@
         {{ program.language }}
         {{ program.start }}
         {{ program.end }}
+    <hr>
+    {% for event in program.get_events %}
+        {{ event }}
+    {% endfor %}
+
+    <a href="/new/event/{{ program.id }}/"><button>Create event</button></a>
 
 <div id="students">
 <h3>Students in the program</h3>

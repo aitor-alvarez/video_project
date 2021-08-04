@@ -70,6 +70,10 @@ class Program(models.Model):
 	program_years = models.CharField(max_length=255)
 	students = models.ManyToManyField(Profile)
 
+	def get_events(self):
+		events = Event.objects.filter(program=self)
+		return events
+
 	def __str__(self):
 		return self.name
 
@@ -83,7 +87,7 @@ class Event(models.Model):
 	country = models.CharField(max_length=155)
 
 	def __str__(self):
-		return self.program.name
+		return self.program.name+' ('+self.get_phase_display()+')'
 
 
 class Language(models.Model):

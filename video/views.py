@@ -23,6 +23,20 @@ class VideoView(LoginRequiredMixin, CreateView):
 		success_url = '/'
 		fields = [ 'file', 'type', 'event']
 
+		def get_initial(self, *args, **kwargs):
+			profile = Profile.objects.filter(user=self.request.user)
+			profile = list(profile.values_list('id', flat=True))
+			programs = Program.objects.filter(students__in=profile)
+			programs = list(programs.values_list('id', flat=True))
+			events = Event.objects.filter(program__in=programs)
+			if events:
+				initial = super(VideoView, self).get_initial(**kwargs)
+				initial['events'] = events
+				return initial
+			else:
+				HttpResponseRedirect('/')
+
+
 		def form_valid(self, form):
 			video_form = form.save(commit=False)
 			last_id = Video.objects.latest('id')
@@ -52,6 +66,28 @@ class ProgramView(LoginRequiredMixin, CreateView):
 			return initial
 		else:
 			HttpResponseRedirect('/')
+
+
+class EventView(LoginRequiredMixin, CreateView):
+	model = Event
+	template_name = 'video/event_form.html'
+	fields = ('program', 'start', 'end', 'phase', 'city', 'country')
+	success_url = '/'
+
+	def get_initial(self, *args, **kwargs):
+		profile = Profile.objects.get(user= self.request.user)
+		if profile.type == 'A':
+			initial = super(EventView, self).get_initial(**kwargs)
+			return initial
+		else:
+			HttpResponseRedirect('/')
+
+	def form_valid(self, form):
+		program_id = self.kwargs['program_id']
+		program = Program.objects.get(id=program_id)
+		form.program = program
+		form.save()
+		return redirect('program_detail', program_id=program_id)
 
 
 @login_required
