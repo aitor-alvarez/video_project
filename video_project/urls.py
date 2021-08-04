@@ -25,6 +25,7 @@ urlpatterns = [
 		path('ajax/transcribe/', extract_audio_and_transcript),
 		path('programs/', list_programs),
 		path('ajax/search_user/', search_user),
+		path('ajax/enroll_user/', enroll_user),
 		path('program/<int:program_id>/', program_detail, name='program_detail'),
 		path('generate/<int:video_id>/', generate_video, name='generate_video')
 ]

@@ -68,13 +68,35 @@ def list_programs(request):
 def search_user(request):
 	if request.is_ajax():
 		email = request.POST.get('email', None)
+		program_id = request.POST.get('program_id', None)
 		try:
 			profile = Profile.objects.get(user__email =email)
-			response = {
-				'first_name': profile.first_name, 'last_name': profile.last_name, 'email': email }
-			return JsonResponse(response)
+			if not Program.objects.filter(id=program_id, students__in=[profile]).exists():
+				response = {
+					'first_name': profile.first_name, 'last_name': profile.last_name, 'email': email, 'profile_id': profile.id }
+				return JsonResponse(response)
+			else:
+				response = {'error': 'There is a student with this email that is currently enrolled.'}
+				return JsonResponse(response)
 		except:
 			response ={'error': 'There is no user with this email'}
+			return JsonResponse(response)
+
+
+@login_required
+def enroll_user(request):
+	if request.is_ajax():
+		profile_id = request.POST.get('profile_id', None)
+		program_id = request.POST.get('program_id', None)
+		try:
+			profile = Profile.objects.get(id=profile_id)
+			program = Program.objects.get(id=program_id)
+			program.students.add(profile)
+			response = {
+				'msg':'User added as student.' }
+			return JsonResponse(response)
+		except:
+			response ={'error': 'Student could not be enrolled'}
 			return JsonResponse(response)
 
 
@@ -83,7 +105,7 @@ def program_detail(request, program_id):
 	profile = Profile.objects.get(user=request.user)
 	if profile.type == 'A' or 'B':
 		program = Program.objects.get(id=program_id)
-		return render(request, 'video/program_detail.html', {'program': program})
+		return render(request, 'video/program_detail.html', {'program': program, 'profile': profile})
 	else:
 		HttpResponseRedirect('/')
 

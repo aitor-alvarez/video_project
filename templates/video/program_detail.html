@@ -47,26 +47,30 @@ $( document ).ready(function() {
     $("#registration").on('submit', function (e) {
         e.preventDefault();
 
+        $("#student_name").empty();
+         $("#student_last_name").empty();
+
     $.ajax({
         type: "POST",
         url: "/ajax/search_user/",
         data: {
             email: $("#email").val(),
+            program_id: '{{ program.id }}',
             csrfmiddlewaretoken: '{{ csrf_token }}',
             dataType: "json",
         },
 
         success: function (response) {
             if (response['error']){
+                $("#student_data").empty();
                 $("#student_data").show(200);
                 $("#student_data").append(response['error']);
             }
             else {
-                alert(response['first_name']);
                 $("#student_data").show(200);
                 $("#student_name").append(response['first_name']);
                 $("#student_last_name").append(response['last_name']);
-                $("#enroll").html('<button id="enroll">Enroll student</button>')
+                $("#enroll").html('<button id="enroll">Enroll student</button>');
 
             }
         },
@@ -77,7 +81,36 @@ $( document ).ready(function() {
     });
 })
 
+$('#enroll').on('click', function (e) {
+    e.preventDefault();
 
+    $.ajax({
+        type: "POST",
+        url: "/ajax/enroll_user/",
+        data: {
+           'profile_id' : '{{ profile.id }}',
+            'program_id': '{{ program.id }}',
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            dataType: "json",
+        },
+
+        success: function (response) {
+            if (response['error']){
+
+                $("#student_data").append(response['error']);
+            }
+            else {
+                alert(response['msg'])
+
+            }
+        },
+
+        failure: function (error) {
+            alert(error);
+        }
+    });
+
+})
 
 })
 </script>
