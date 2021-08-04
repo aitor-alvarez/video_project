@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+        {{ program.name }}
+        {{ program.language }}
+        {{ program.start }}
+        {{ program.end }}
+
+<div id="students">
+<h3>Students in the program</h3>
+
+{% for student in program.students.all %}
+
+    {{ student }}
+
+{% endfor %}
+
+<button id="add_student">Add student to the program</button>
+<div id="student-form">
+    <h4>Search a user by email:</h4>
+    <form id="registration" action="." method="POST">
+        {% csrf_token %}
+        <input type="text" id="email" required>
+        <input type="submit">
+    </form>
+</div>
+<div id="student_data">
+<p id="student_name"></p>
+<p id="student_last_name"></p>
+    <p id="enroll"></p>
+
+</div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+$( document ).ready(function() {
+    $("#student-form").hide();
+    $("#student_data").hide();
+    $("#add_student").on('click', function () {
+        $("#student-form").show(300);
+    })
+
+    //search for user and return data
+    $("#registration").on('submit', function (e) {
+        e.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "/ajax/search_user/",
+        data: {
+            email: $("#email").val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            dataType: "json",
+        },
+
+        success: function (response) {
+            if (response['error']){
+                $("#student_data").show(200);
+                $("#student_data").append(response['error']);
+            }
+            else {
+                alert(response['first_name']);
+                $("#student_data").show(200);
+                $("#student_name").append(response['first_name']);
+                $("#student_last_name").append(response['last_name']);
+                $("#enroll").html('<button id="enroll">Enroll student</button>')
+
+            }
+        },
+
+        failure: function (error) {
+            alert(error);
+        }
+    });
+})
+
+
+
+})
+</script>
+{% endblock %}

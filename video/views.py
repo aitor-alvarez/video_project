@@ -1,16 +1,10 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from utils.utils import *
 from django.http import JsonResponse
-from botocore.exceptions import ClientError
-import logging
 from .models import *
-from django.views.generic.edit import FormView
-from .forms import VideoForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
-import asyncio
 import os
 import uuid
 from botocore.exceptions import ClientError
@@ -69,6 +63,29 @@ def list_programs(request):
 	else:
 		HttpResponseRedirect('/')
 
+
+@login_required
+def search_user(request):
+	if request.is_ajax():
+		email = request.POST.get('email', None)
+		try:
+			profile = Profile.objects.get(user__email =email)
+			response = {
+				'first_name': profile.first_name, 'last_name': profile.last_name, 'email': email }
+			return JsonResponse(response)
+		except:
+			response ={'error': 'There is no user with this email'}
+			return JsonResponse(response)
+
+
+@login_required
+def program_detail(request, program_id):
+	profile = Profile.objects.get(user=request.user)
+	if profile.type == 'A' or 'B':
+		program = Program.objects.get(id=program_id)
+		return render(request, 'video/program_detail.html', {'program': program})
+	else:
+		HttpResponseRedirect('/')
 
 
 def generate_video(request, video_id):
@@ -131,5 +148,3 @@ def extract_audio_and_transcript(request):
 		else:
 			response=audio_file
 		return JsonResponse(response)
-
-
