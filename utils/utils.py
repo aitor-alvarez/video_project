@@ -6,6 +6,7 @@ from webvtt import WebVTT, Caption
 import boto3
 from google.cloud import translate
 from django.conf import settings
+from boto3 import s3
 
 
 import os
@@ -171,6 +172,16 @@ def translate_text(text, lang, project_id=getattr(settings, "GCLOUD_PROJECT", No
     # Get the translation from the response
     for translation in response.translations:
         return format(translation.translated_text)
+
+
+def get_s3_url(bucket, key):
+	url = s3.generate_presigned_url('get_object',
+                                Params={
+                                    'Bucket': bucket,
+                                    'Key': key,
+                                },
+                                ExpiresIn=0)
+	return url
 
 
 

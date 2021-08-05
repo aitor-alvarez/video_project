@@ -14,14 +14,27 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 @login_required
 def showcase_videos(request):
 	videos = Video.objects.filter(is_showcase=True)
-	return render(request, 'video/home.html', {'videos': videos})
+	videos=[]
+	for v in videos:
+		video_url = get_s3_url('flagship-videos', 'videos/' + str(v.pid)+'.mp4')
+		try:
+			transcript_url = get_s3_url('flagship-videos', 'transcript/' + str(v.pid)+'.vtt')
+		except:
+			transcript_url=''
+		try:
+			translation_url = get_s3_url('flagship-videos', 'translations/' + str(v.pid)+'.vtt')
+		except:
+			translation_url =''
+		videos.append((video_url, transcript_url, translation_url, v.language))
+
+	return render(request, 'video/home.html', {'urls':  videos})
 
 
 class VideoView(LoginRequiredMixin, CreateView):
 		model = Video
 		template_name = 'video/video_form.html'
 		success_url = '/'
-		fields = [ 'file', 'type', 'event']
+		fields = ['file', 'type', 'event']
 
 		def get_initial(self, *args, **kwargs):
 			profile = Profile.objects.filter(user=self.request.user)

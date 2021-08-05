@@ -18,6 +18,7 @@ from django.urls import path
 from video.views import *
 
 urlpatterns = [
+		path('', showcase_videos),
     path('admin/', admin.site.urls),
 		path('new/program/', ProgramView.as_view()),
 		path('new/event/<int:program_id>/', EventView.as_view()),
