@@ -180,7 +180,7 @@ def get_s3_url(bucket, key):
                                     'Bucket': bucket,
                                     'Key': key,
                                 },
-                                ExpiresIn=0)
+                                ExpiresIn=4200)
 	return url
 
 

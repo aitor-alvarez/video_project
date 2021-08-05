@@ -199,9 +199,9 @@ def extract_audio_and_transcript(request):
 			if speech_txt_response:
 				vtt_file = generate_vtt_caption(speech_txt_response, language)
 				if vtt_file is not None:
-					vtt_filename = 'tmp/transcript/'+access_code+'.vtt'
+					vtt_filename = access_code+'.vtt'
 					vtt_file.save(vtt_filename)
-					s3_upload_file_to_bucket(vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
+					s3_upload_file_to_bucket('tmp/transcript/'+ vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
 					                         {'ContentType': 'text/vtt', 'pid': access_code,
 					                          'access_code': access_code, 'language': language})
 					os.remove(video_file)
