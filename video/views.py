@@ -74,11 +74,44 @@ class ProgramView(LoginRequiredMixin, CreateView):
 
 	def get_initial(self, *args, **kwargs):
 		profile = Profile.objects.get(user= self.request.user)
-		if profile.type == 'A':
+		if profile.type == 'A' or 'B':
 			initial = super(ProgramView, self).get_initial(**kwargs)
 			return initial
 		else:
 			HttpResponseRedirect('/')
+
+
+class UserView(LoginRequiredMixin, CreateView):
+	model = Profile
+	template_name = 'video/user_form.html'
+	fields = ('first_name', 'last_name', 'email', 'type', 'institution')
+	success_url = '/'
+
+	def get_initial(self, *args, **kwargs):
+		profile = Profile.objects.get(user= self.request.user)
+		if profile.type == 'A' or 'B':
+			initial = super(UserView, self).get_initial(**kwargs)
+			return initial
+		else:
+			HttpResponseRedirect('/')
+
+	def form_valid(self, form):
+		form.save(commit=False)
+		user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'])
+		profile = Profile.objects.get(id=user.id)
+		profile.user = user
+		profile.email = form.cleaned_data['email']
+		profile.first_name = form.cleaned_data['first_name']
+		profile.last_name = form.cleaned_data['last_name']
+		profile.type = form.cleaned_data['type']
+		profile.save()
+		return redirect('/')
+
+
+
+def get_users(request):
+	profiles = Profile.objects.filter(user__is_staff=False)
+	return render(request, 'video/users.html', {'profiles':profiles})
 
 
 class EventView(LoginRequiredMixin, CreateView):
@@ -89,7 +122,7 @@ class EventView(LoginRequiredMixin, CreateView):
 
 	def get_initial(self, *args, **kwargs):
 		profile = Profile.objects.get(user= self.request.user)
-		if profile.type == 'A':
+		if profile.type == 'A' or 'B':
 			initial = super(EventView, self).get_initial(**kwargs)
 			return initial
 		else:
