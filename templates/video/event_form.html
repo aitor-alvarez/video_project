@@ -5,7 +5,12 @@
     <h3>Add event to program</h3>
 <form action="." method="POST">
 {% csrf_token %}
-{{ form }}
+{% for field in form %}
+
+        {{ field.name }}
+    {{ field }}
+
+    {% endfor %}
 <button type="submit">Submit</button>
 </form>
 

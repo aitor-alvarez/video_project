@@ -9,6 +9,7 @@ import os
 import uuid
 from botocore.exceptions import ClientError
 from django.contrib.auth.mixins import LoginRequiredMixin
+from video.forms import *
 
 
 @login_required
@@ -117,21 +118,20 @@ def get_users(request):
 class EventView(LoginRequiredMixin, CreateView):
 	model = Event
 	template_name = 'video/event_form.html'
-	fields = ('program', 'start', 'end', 'phase', 'city', 'country')
-	success_url = '/'
+	form_class = EventForm
 
 	def get_initial(self, *args, **kwargs):
 		profile = Profile.objects.get(user= self.request.user)
 		if profile.type == 'A' or 'B':
 			initial = super(EventView, self).get_initial(**kwargs)
+			initial['program'] = self.kwargs['program_id']
 			return initial
 		else:
 			HttpResponseRedirect('/')
 
 	def form_valid(self, form):
+		form.save(commit=False)
 		program_id = self.kwargs['program_id']
-		program = Program.objects.get(id=program_id)
-		form.program = program
 		form.save()
 		return redirect('program_detail', program_id=program_id)
 
@@ -252,3 +252,19 @@ def extract_audio_and_transcript(request):
 		else:
 			response=audio_file
 		return JsonResponse(response)
+
+
+def show_video(request, video_id):
+	video = Video.objects.get(id=video_id)
+	video_url = get_s3_url('flagship-videos', 'videos/' + str(video.pid)+'.mp4')
+	try:
+		transcript_url = get_s3_url('flagship-videos', 'transcripts/' + str(video.pid)+'.vtt')
+	except:
+		transcript_url=None
+	try:
+		translation_url = get_s3_url('flagship-videos', 'translations/' + str(video.pid)+'.mp4')
+	except:
+		translation_url=None
+
+	return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
+	                                            :translation_url, 'video_object': video})

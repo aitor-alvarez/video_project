@@ -20,4 +20,15 @@ class VideoForm(ModelForm):
 		exclude =('created', 'metadata', 'url', 'pid', 'access_code', 'duration', 'is_showcase', 'title', 'owner')
 
 
+class EventForm(ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(EventForm, self).__init__(*args, **kwargs)
+		self.fields['program'].disabled = True
+		for name in self.fields.keys():
+			self.fields[name].widget.attrs.update({
+				'class': 'form-control',
+			})
 
+	class Meta:
+		model = Event
+		fields = '__all__'

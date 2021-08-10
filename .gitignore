@@ -10,4 +10,7 @@ tmp/
 *.vtt
 *.mp4
 *.flac
+static_files/ableplayer/
+*.png
+.DS_Store
 
