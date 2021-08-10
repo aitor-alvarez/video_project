@@ -2,8 +2,17 @@
 
 {% block content %}
 
-    <h3>Add event to program</h3>
+    <h3>{{ video_object.title }}</h3>
 
 
+    <video id="video1" preload="auto" width="480" height="360" poster="../media/wwa.jpg"data-able-player data-skin="2020" playsinline>
+        <source type="video/mp4" src="{{ video_url }}"/>
+        {% if transcript_url %}
+        <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.language }}" />
+        {% endif %}
+        {% if translation_url %}
+        <track kind="captions" src="{{ translation_url }}" srclang="en" />
+        {% endif %}
+    </video>
 
 {% endblock %}

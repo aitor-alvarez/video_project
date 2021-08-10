@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from video.views import *
 from django.views.generic import TemplateView
+from django.conf.urls.static import static
+
 
 urlpatterns = [
 		path('', showcase_videos),
@@ -21,4 +23,4 @@ urlpatterns = [
 		path('ajax/enroll_user/', enroll_user),
 		path('program/<int:program_id>/', program_detail, name='program_detail'),
 		path('generate/<int:video_id>/', generate_video, name='generate_video')
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -13,4 +13,5 @@ tmp/
 static_files/ableplayer/
 *.png
 .DS_Store
+static_files/
 

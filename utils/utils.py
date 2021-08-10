@@ -56,19 +56,17 @@ def extract_audio_from_video(video_name):
 	if video_name.endswith('.mp4'):
 		output_file = 'tmp/audio/'+video_name.replace('mp4', 'flac')
 		try:
-			AudioSegment.from_file('tmp/video/'+video_name).export(output_file, format='flac', channels=2)
+			AudioSegment.from_file('tmp/video/'+video_name).export(output_file, format='flac')
 			return output_file
 		except:
-			return "There has been an error with your audio file. The file seems to be either mono or is corrupted."
+			return None
 	else:
-		return  "This video file is not in mp4 format"
+		return  None
 
 
 def generate_vtt_caption(speech_txt_response, lang, bin=4):
 
 	vtt = WebVTT()
-	vtt.captions.append('Kind: captions')
-	vtt.captions.append('Language: '+lang)
 	index = 0
 	for result in speech_txt_response.results:
 		try:

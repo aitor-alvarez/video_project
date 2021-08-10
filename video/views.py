@@ -53,12 +53,11 @@ class VideoView(LoginRequiredMixin, CreateView):
 
 		def form_valid(self, form):
 			video_form = form.save(commit=False)
-			last_id = Video.objects.latest('id')
-			pid = last_id.id+1
+			pid = uuid.uuid4().hex
 			profile = Profile.objects.get(user=self.request.user)
 			program = Program.objects.get(students__in=[profile])
 			language = program.language.language_code
-			video_form.access_code = uuid.uuid4().hex
+			video_form.access_code = pid
 			video_form.owner= profile
 			video_form.language = language
 			video_form.pid = pid
@@ -233,7 +232,7 @@ def extract_audio_and_transcript(request):
 				vtt_file = generate_vtt_caption(speech_txt_response, language)
 				if vtt_file is not None:
 					vtt_filename = access_code+'.vtt'
-					vtt_file.save(vtt_filename)
+					vtt_file.save('tmp/transcript/'+vtt_filename)
 					s3_upload_file_to_bucket('tmp/transcript/'+ vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
 					                         {'ContentType': 'text/vtt', 'pid': access_code,
 					                          'access_code': access_code, 'language': language})
@@ -250,7 +249,8 @@ def extract_audio_and_transcript(request):
 				response = {
 					'msg': 'The video file has some errors and audio could not be extracted.'}
 		else:
-			response=audio_file
+			response = {
+					'msg': 'The video file has some errors and audio could not be extracted.'}
 		return JsonResponse(response)
 
 

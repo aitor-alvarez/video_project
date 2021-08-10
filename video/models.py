@@ -46,7 +46,7 @@ class Video(models.Model):
 	file = models.FileField( upload_to='tmp/video/',blank=True, null=True)
 	language = models.CharField(max_length=255, blank=True)
 	url = models.URLField(blank=True)
-	pid = models.IntegerField(blank=True)
+	pid = models.CharField(max_length=255, blank=True)
 	metadata = models.TextField(blank=True)
 	access_code = models.CharField(max_length=255, blank=True)
 	type = models.CharField(max_length=1, choices=video_types)
