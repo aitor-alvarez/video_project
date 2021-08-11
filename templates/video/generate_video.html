@@ -20,6 +20,7 @@ function generate_transcript(){
                 type : "POST",
                 url: "/ajax/transcribe/",
                 data: {
+                 video_id : '{{ video.id }}',
                  video_file : '{{ video.file }}',
                  language : '{{ video.language }}',
                  access_code : '{{ video.access_code }}',

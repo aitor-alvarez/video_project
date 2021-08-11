@@ -191,19 +191,23 @@ def program_detail(request, program_id):
 		HttpResponseRedirect('/')
 
 
+@login_required
 def generate_video(request, video_id):
 	video = Video.objects.get(id=video_id)
-	if request.user == video.owner.user:
-		if video.is_final == False:
-			return render(request, 'video/generate_video.html', {'video': video})
-		else:
-			error ="This video has been marked as final. You cannot regenerate transcripts or modify it."
-			return render(request, 'video/generate_video.html', {'error': error})
+	if video.is_final or video.transcript_created:
+		return HttpResponseRedirect('/my-videos/')
 	else:
-		error = "You are not authorized to access this video"
-		return render(request, 'video/generate_video.html', {'error': error})
+		if request.user == video.owner.user:
+			if video.is_final == False:
+				return render(request, 'video/generate_video.html', {'video': video})
+			else:
+				error ="This video has been marked as final. You cannot regenerate transcripts or modify it."
+				return render(request, 'video/generate_video.html', {'error': error})
+		else:
+			error = "You are not authorized to access this video"
+			return render(request, 'video/generate_video.html', {'error': error})
 
-
+@login_required
 def upload_video_s3(request):
 	if request.is_ajax():
 		id = request.POST.get('id', None)
@@ -219,12 +223,15 @@ def upload_video_s3(request):
 		return JsonResponse(response)
 
 
+@login_required
 def extract_audio_and_transcript(request):
 	if request.is_ajax():
+		video_id = request.POST.get('video_id', None)
 		video_file = request.POST.get('video_file', None)
 		language = request.POST.get('language', None)
 		access_code = request.POST.get('access_code', None)
 		audio_file = extract_audio_from_video(video_file.split('/')[-1])
+		video = Video.objects.get(id=video_id)
 		if audio_file is not None:
 			file_url, blob = upload_to_gcs(audio_file, 'flagship-videos')
 			speech_txt_response = process_speech_to_txt(file_url, language)
@@ -236,6 +243,8 @@ def extract_audio_and_transcript(request):
 					s3_upload_file_to_bucket('tmp/transcript/'+ vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
 					                         {'ContentType': 'text/vtt', 'pid': access_code,
 					                          'access_code': access_code, 'language': language})
+					video.transcript_created = True
+					video.save()
 					os.remove(video_file)
 					os.remove(audio_file)
 					blob.delete()
@@ -254,17 +263,22 @@ def extract_audio_and_transcript(request):
 		return JsonResponse(response)
 
 
+
 def show_video(request, video_id):
 	video = Video.objects.get(id=video_id)
-	video_url = get_s3_url('flagship-videos', 'videos/' + str(video.pid)+'.mp4')
-	try:
-		transcript_url = get_s3_url('flagship-videos', 'transcripts/' + str(video.pid)+'.vtt')
-	except:
-		transcript_url=None
-	try:
-		translation_url = get_s3_url('flagship-videos', 'translations/' + str(video.pid)+'.mp4')
-	except:
-		translation_url=None
+	if video.is_public:
+		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
+		if video.transcript_created == True:
+				transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
 
-	return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
-	                                            :translation_url, 'video_object': video})
+		else:
+			transcript_url=None
+		if video.is_final==True:
+			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid)+'.mp4')
+		else:
+			translation_url=None
+
+		return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
+		                                            :translation_url, 'video_object': video})
+	else:
+		return HttpResponse('<h3>This video is not public.</h3>')

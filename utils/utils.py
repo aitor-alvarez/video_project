@@ -6,7 +6,7 @@ from webvtt import WebVTT, Caption
 import boto3
 from google.cloud import translate
 from django.conf import settings
-from boto3 import s3
+
 
 
 import os
@@ -138,8 +138,6 @@ def s3_upload_file_to_bucket(file, bucket, Key, metadata):
 
 def generate_translation(vtt, lang):
 	new_vtt = WebVTT()
-	new_vtt.captions.append('Kind: captions')
-	new_vtt.captions.append('Language: '+lang)
 	for i in range(0, len(vtt.captions)-1):
 		if isinstance(vtt[i], str):
 			pass
@@ -173,7 +171,8 @@ def translate_text(text, lang, project_id=getattr(settings, "GCLOUD_PROJECT", No
 
 
 def get_s3_url(bucket, key):
-	url = s3.generate_presigned_url('get_object',
+	client = boto3.client('s3')
+	url = client.generate_presigned_url('get_object',
                                 Params={
                                     'Bucket': bucket,
                                     'Key': key,
