@@ -10,25 +10,23 @@ import uuid
 from botocore.exceptions import ClientError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from video.forms import *
+import webvtt
+import json
+import random
+
+
+
+def home(request):
+	videos_ids = Video.objects.filter(is_showcase=True).values_list('id', flat=True)
+	videos_showcase_ids = random.sample(list(videos_ids), min(len(videos_ids), 3))
+	videos_showcase = Video.objects.filter(id__in=videos_showcase_ids)
+	return render(request, 'video/home.html', {'videos':  videos_showcase})
 
 
 @login_required
-def showcase_videos(request):
-	videos = Video.objects.filter(is_showcase=True)
-	videos=[]
-	for v in videos:
-		video_url = get_s3_url('flagship-videos', 'videos/' + str(v.pid)+'.mp4')
-		try:
-			transcript_url = get_s3_url('flagship-videos', 'transcript/' + str(v.pid)+'.vtt')
-		except:
-			transcript_url=''
-		try:
-			translation_url = get_s3_url('flagship-videos', 'translations/' + str(v.pid)+'.vtt')
-		except:
-			translation_url =''
-		videos.append((video_url, transcript_url, translation_url, v.language))
-
-	return render(request, 'video/home.html', {'urls':  videos})
+def my_videos(request):
+	videos = Video.objects.filter(owner__user=request.user)
+	return render(request, 'video/my_videos.html', {'my_videos':  videos})
 
 
 class VideoView(LoginRequiredMixin, CreateView):
@@ -108,7 +106,7 @@ class UserView(LoginRequiredMixin, CreateView):
 		return redirect('/')
 
 
-
+@login_required
 def get_users(request):
 	profiles = Profile.objects.filter(user__is_staff=False)
 	return render(request, 'video/users.html', {'profiles':profiles})
@@ -245,8 +243,20 @@ def extract_audio_and_transcript(request):
 					                          'access_code': access_code, 'language': language})
 					video.transcript_created = True
 					video.save()
+					try:
+						thumb_file = 'tmp/thumbs/'+access_code+'.jpg'
+						thumb = generate_thumb(video_file, thumb_file, 480)
+						s3_upload_file_to_bucket(thumb_file, 'videos-techcenter',
+						                         'thumbs/' +access_code+'.jpg',
+						                         {'ContentType': 'image/jpeg', 'pid': access_code,
+						                          'access_code': access_code, 'language': language})
+						video.thumb_created = True
+						video.save()
+					except:
+						print("no thumb")
 					os.remove(video_file)
 					os.remove(audio_file)
+					os.remove(thumb_file)
 					blob.delete()
 					response = {
 						'msg': 'Transcript generated successfully.'}
@@ -266,7 +276,7 @@ def extract_audio_and_transcript(request):
 
 def show_video(request, video_id):
 	video = Video.objects.get(id=video_id)
-	if video.is_public:
+	if video.is_public or video.owner.user == request.user:
 		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
 		if video.transcript_created == True:
 				transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
@@ -274,7 +284,7 @@ def show_video(request, video_id):
 		else:
 			transcript_url=None
 		if video.is_final==True:
-			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid)+'.mp4')
+			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid)+'.vtt')
 		else:
 			translation_url=None
 
@@ -282,3 +292,21 @@ def show_video(request, video_id):
 		                                            :translation_url, 'video_object': video})
 	else:
 		return HttpResponse('<h3>This video is not public.</h3>')
+
+
+def read_vtt_file(request):
+	if request.is_ajax():
+		path = request.POST.get('file_path', None)
+		output = []
+		for caption in webvtt.read(path):
+			vtt_file = {}
+			vtt_file['start'] = caption.start
+			vtt_file['end'] = caption.end
+			vtt_file['text'] = caption.text
+			output.append(vtt_file)
+	return JsonResponse(json.dumps(output), ensure_ascii=False).encode('utf8')
+
+
+def save_vtt_s3(request):
+	json_object = json.loads(request.POST.get('json_object', None))
+

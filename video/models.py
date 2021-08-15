@@ -44,6 +44,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 class Video(models.Model):
 	title = models.CharField(max_length=255, blank=True)
 	file = models.FileField( upload_to='tmp/video/',blank=True, null=True)
+	description = models.TextField(blank=True)
 	language = models.CharField(max_length=255, blank=True)
 	url = models.URLField(blank=True)
 	pid = models.CharField(max_length=255, blank=True)
@@ -58,6 +59,7 @@ class Video(models.Model):
 	duration = models.IntegerField(null=True, blank=True)
 	transcript_created = models.BooleanField(default=0)
 	is_final = models.BooleanField(default=0)
+	thumb_created = models.BooleanField(default=0)
 	created = models.DateTimeField(default=datetime.datetime.now())
 
 	def __str__(self):

@@ -6,7 +6,8 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-		path('', showcase_videos),
+		path('', home),
+		path('my-videos/', my_videos),
 		path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
 		path('new/program/', ProgramView.as_view()),

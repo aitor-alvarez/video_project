@@ -1,10 +1,58 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 
 {% block content %}
-    {{ urls }}
-{% for url in urls %}
 
-    {{ url }}
+<div class="row">
 
-{% endfor %}
+          <div class="col-md-10 ml-auto mr-auto">
+            <h3 class="text-center title">The Language Flagship Video Project</h3>
+            <hr>
+
+               <h4>Launched in 2018, the video project is now an integrated component in the Arabic, Chinese, Portuguese and
+                   Russian Overseas Capstone Programs. Over the course of the second semester, capstone students research and prepare
+                   a 20-minute oral presentation on a topic of
+                   professional or academic interest for delivery in a conference setting (usually the focus is the internship).</h4>
+              <a href="/about/">Continue reading</a>
+          </div>
+</div>
+<div class="section text-center">
+<div class="features">
+          <div class="row">
+              <div class="col-md-10 ml-auto mr-auto">
+            <h3 class="text-center title">Options</h3>
+                  <hr>
+              </div>
+
+            <div class="col-md-4">
+              <div class="info">
+                <div class="icon icon-danger">
+                  <i class="material-icons">video_library</i>
+                </div>
+                <h4 class="info-title">Showcase Videos</h4>
+                <h5>Start watching a selection of videos from Flagship students</h5>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="info">
+                <div class="icon icon-success">
+                  <i class="material-icons">verified_user</i>
+                </div>
+                <h4 class="info-title">Registered Users</h4>
+                    <h5>Log into your account to upload videos, or to manage programs and events.</h5>
+              </div>
+            </div>
+
+              <div class="col-md-4">
+              <div class="info">
+                <div class="icon icon-info">
+                  <i class="material-icons">chat</i>
+                </div>
+                <h4 class="info-title">Provide Feedback</h4>
+                  <h5>Help us make this website better by providing <a href="">your feedback.</a></h5>
+              </div>
+            </div>
+          </div>
+        </div>
+</div>
 {% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="row">
+          <div class="col-md-10 ml-auto mr-auto">
+            <h2 class="text-center title">My Videos</h2>
+            <br>
+            <hr>
+            <br>
+
+                {% for video in my_videos %}
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header card-header-text card-header-primary">
+                                <div class="card-text">
+                                    <h4 class="card-title">{{ video.title }} | {{ video.event }} {{ video.event.start }}</h4>
+                                </div>
+                            </div>
+                                <div class="card-body">
+                                    <span><i class="material-icons">language</i> {{ video.event.program.language.language }}</span>
+                                    <p><i class="material-icons">link</i><a href="/video/{{ video.id }}">View video</a></p>
+
+                                </div>
+                        </div>
+                    </div>
+              {% endfor %}
+          </div>
+        </div>
+{% endblock %}

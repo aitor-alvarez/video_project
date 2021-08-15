@@ -6,7 +6,7 @@ from webvtt import WebVTT, Caption
 import boto3
 from google.cloud import translate
 from django.conf import settings
-
+import ffmpeg
 
 
 import os
@@ -64,7 +64,7 @@ def extract_audio_from_video(video_name):
 		return  None
 
 
-def generate_vtt_caption(speech_txt_response, lang, bin=4):
+def generate_vtt_caption(speech_txt_response, lang, bin=8):
 
 	vtt = WebVTT()
 	index = 0
@@ -181,4 +181,16 @@ def get_s3_url(bucket, key):
 	return url
 
 
-
+def generate_thumb(mp4_file, out_file, width):
+	in_file = ffmpeg.input(mp4_file)
+	try:
+		(
+		ffmpeg
+			.input(in_file, ss=2)
+			.filter('scale', width, -1)
+			.output(out_file, vframes=1)
+			.run()
+		)
+		return out_file
+	except:
+		return None
