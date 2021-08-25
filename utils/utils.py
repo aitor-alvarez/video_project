@@ -23,7 +23,7 @@ def process_speech_to_txt(path, lang):
 		enable_word_time_offsets=True
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
-	response = operation.result(timeout=660)
+	response = operation.result(timeout=960)
 	return response
 
 
@@ -64,7 +64,7 @@ def extract_audio_from_video(video_name):
 		return  None
 
 
-def generate_vtt_caption(speech_txt_response, lang, bin=8):
+def generate_vtt_caption(speech_txt_response, lang, bin=7):
 
 	vtt = WebVTT()
 	index = 0

@@ -1,12 +1,14 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from video.views import *
 from django.views.generic import TemplateView
 from django.conf.urls.static import static
 
-
 urlpatterns = [
 		path('', home),
+		path('about/', TemplateView.as_view(template_name='video/about.html')),
+		path('showcase/', showcase_videos),
+		path('showcase/<int:video_id>', showcase_videos),
 		path('my-videos/', my_videos),
 		path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
@@ -19,9 +21,11 @@ urlpatterns = [
 		path('upload/', VideoView.as_view()),
 		path('ajax/upload_video/', upload_video_s3),
 		path('ajax/transcribe/', extract_audio_and_transcript),
+		path('edit-transcript/<int:video_id>', edit_transcript),
 		path('programs/', list_programs),
 		path('ajax/search_user/', search_user),
 		path('ajax/enroll_user/', enroll_user),
+		path('ajax/save_transcript/', save_vtt_s3),
 		path('program/<int:program_id>/', program_detail, name='program_detail'),
 		path('generate/<int:video_id>/', generate_video, name='generate_video')
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

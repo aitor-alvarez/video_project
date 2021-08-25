@@ -38,7 +38,7 @@ $(document).ready(function() {
 var csrftoken = $("[name=csrfmiddlewaretoken]").val();
 
     $("#video-form").submit(function (e) {
-        alert(e);
+
         // preventing from page reload and default actions
         e.preventDefault();
         // serialize the data for sending the form data.
@@ -46,7 +46,7 @@ var csrftoken = $("[name=csrfmiddlewaretoken]").val();
         // make POST ajax call
         $.ajax({
             type: 'POST',
-            url: '/ajax/upload/',
+            url: '/ajax/upload_video/',
             headers:{
         "X-CSRFToken": csrftoken
     },

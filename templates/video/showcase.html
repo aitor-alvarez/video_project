@@ -1,0 +1,47 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+
+<div class="row">
+
+          <div class="col-md-12 ml-auto mr-auto">
+          <form action="." method="POST">
+          {% csrf_token %}
+              <div class="form-group">
+                <label for="exampleFormControlSelect1">Select Video</label>
+                <select onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" class="form-control" id="FormControlSelect1">
+                    <option value="0" data-lang="0">Select</option>
+                    {% for video in videos %}
+                        <option value="/showcase/{{ video.id }}" data-lang="{{ video.language }}">{{ video.title }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+          </form>
+          <br>
+
+
+            {% if video_object.description %}
+                <h3>About this Speaker:</h3>
+          <div class="card-body">
+            <p class="text-justify">
+                <strong>
+                    {{ video_object.description }}
+                </strong>
+            </p>
+          </div>
+    {% endif %}
+          <br>
+<div id="video-and-meta-wrapper">
+  <video id="video1" preload="auto" width="480" height="360" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="true" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
+    <source type="video/mp4" src="{{ video_url }}" />
+
+    <!-- Able Player will display tracks alphabetically by label -->
+    <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.language.language_code }}" label="{{ video_object.language.language }}"/>
+      {% if translation_url %}
+            <track kind="subtitles" src="{{ translation_url }}" srclang="en" label="English"/>
+    {% endif %}
+  </video>
+</div>
+          </div>
+</div>
+{% endblock %}

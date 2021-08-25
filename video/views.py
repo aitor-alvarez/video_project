@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from utils.utils import *
 from django.http import JsonResponse
-from .models import *
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
@@ -13,6 +12,7 @@ from video.forms import *
 import webvtt
 import json
 import random
+import boto3
 
 
 
@@ -21,6 +21,29 @@ def home(request):
 	videos_showcase_ids = random.sample(list(videos_ids), min(len(videos_ids), 3))
 	videos_showcase = Video.objects.filter(id__in=videos_showcase_ids)
 	return render(request, 'video/home.html', {'videos':  videos_showcase})
+
+
+def showcase_videos(request, video_id=1):
+	videos = Video.objects.filter(is_showcase=True)
+	if video_id is None:
+		video = videos[0]
+	else:
+		video = Video.objects.get(id=video_id)
+
+	if video.is_showcase:
+		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
+		if video.transcript_created == True:
+				transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
+
+		else:
+			transcript_url=None
+		if video.is_final==True:
+			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid)+'.vtt')
+		else:
+			translation_url=None
+	return render(request, 'video/showcase.html', {'videos':videos,'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
+		                                            :translation_url, 'video_object': video })
+
 
 
 @login_required
@@ -205,6 +228,7 @@ def generate_video(request, video_id):
 			error = "You are not authorized to access this video"
 			return render(request, 'video/generate_video.html', {'error': error})
 
+
 @login_required
 def upload_video_s3(request):
 	if request.is_ajax():
@@ -291,22 +315,49 @@ def show_video(request, video_id):
 		return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
 		                                            :translation_url, 'video_object': video})
 	else:
-		return HttpResponse('<h3>This video is not public.</h3>')
+		return render(request, 'video/video.html', {'error': True})
 
 
-def read_vtt_file(request):
-	if request.is_ajax():
-		path = request.POST.get('file_path', None)
-		output = []
-		for caption in webvtt.read(path):
-			vtt_file = {}
-			vtt_file['start'] = caption.start
-			vtt_file['end'] = caption.end
-			vtt_file['text'] = caption.text
-			output.append(vtt_file)
-	return JsonResponse(json.dumps(output), ensure_ascii=False).encode('utf8')
+def edit_transcript(request, video_id):
+	video = Video.objects.get(id=video_id)
+	transcript_file = 'tmp/transcript/'+video.access_code+'.vtt'
+	transcript = get_s3_url('videos-techcenter', 'transcripts/'+video.access_code+'.vtt')
+	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid) + '.mp4')
+	output = []
+	for caption in webvtt.read(transcript_file):
+		vtt_file = {}
+		vtt_file['start'] = caption.start
+		vtt_file['end'] = caption.end
+		vtt_file['text'] = caption.text
+		output.append(vtt_file)
+
+	return render(request, 'video/video_edit.html', {'video': video, 'output':output,
+	                                                 'video_url': video_url})
 
 
 def save_vtt_s3(request):
-	json_object = json.loads(request.POST.get('json_object', None))
+	if request.is_ajax():
+		data = request.POST.getlist('requestData[]', [])
+		filename = request.POST.get('file')
+		lang = request.POST.get('lang')
+		data = [json.loads(d) for d in data]
+		vtt = WebVTT()
+		for d in data:
+			caption = Caption(
+				d['start'],
+				d['end'],
+				d['text']
+			)
+			vtt.captions.append(caption)
+		try:
+			vtt.save('tmp/transcript/'+filename+'.vtt')
+			s3_upload_file_to_bucket('tmp/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
+			                         {'ContentType': 'text/vtt', 'pid': filename,
+			                          'access_code': filename, 'language':lang})
+			response = {
+				'msg': 'The file has been saved correctly'}
+		except:
+			response = {
+				'msg': 'The file was not saved correctly'}
+		return JsonResponse(response)
 

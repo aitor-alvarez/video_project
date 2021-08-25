@@ -1,0 +1,119 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+    {% if request.user != video.owner.user %}
+
+        <h3 class="text-danger"><strong>You do not have permission to perform this action.</strong></h3>
+
+    {% elif video.is_final == 1 %}
+         <h3 class="text-danger"><strong>This transcript cannot be edited because it has been marked as final.</strong></h3>
+    {% else %}
+ <div id="show-transcript">
+<div class="row">
+<div class="col-md-6">
+<div id="video-and-meta-wrapper">
+  <video id="video" preload="auto" width="480" height="360" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="true" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
+    <source type="video/mp4" src="{{ video_url }}" />
+  </video>
+</div>
+</div>
+
+<div class="col-md-6">
+<h3>Transcript Editor</h3>
+<br>
+
+<form id="video-edit" method="POST">
+{% csrf_token %}
+        <br>
+        <br>
+         <div class="able-transcript">
+        <div class="able-transcript-container">
+        {% for out in output %}
+         <button type="button" class="btn btn-success" data-start="{{ out.start }}">Clip ({{ out.start }}--{{ out.end }})</button>
+        <textarea class="form-control" data-start="{{ out.start }}" data-end="{{ out.end }}" rows="1">{{ out.text }}</textarea>
+            <br>
+        {% endfor %}
+        <br>
+        </div>
+         </div>
+<br>
+<input type="submit" value="Save" class="btn btn-info">
+</form>
+</div>
+    {% endif %}
+</div>
+    </div>
+    <div class="row">
+    <div id="show-response">
+<h4>The transcript has been saved</h4>
+        <br>
+        <a href="/edit-transcript/{{ video.id }}"><button type="button" class="btn btn-success ">Continue editing</button></a>
+        <a href="/video/{{ video.id }}"><button type="button" class="btn btn-success ">Go back to video</button></a>
+
+
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+
+$(document).ready(function() {
+    $('#show-response').hide();
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+    var vid = document.getElementById("video");
+
+    $('.btn-success').on('click', function () {
+        var clip = $(this)[0].dataset.start.split(':');
+        var seconds = parseInt(clip[1].substr(0, 2)) + parseInt(clip[2].substr(0, 2));
+        setCurTime(seconds);
+})
+
+function setCurTime(t) {
+  vid.currentTime=t;
+}
+
+//Get all th textarea elements and create a dict-like JSON object
+function get_data() {
+        data=[]
+        $("textarea").each(function(){
+            var dict = {"text": $(this).val(), "start": $(this)[0].dataset.start, "end": $(this)[0].dataset.end};
+            data.push(JSON.stringify(dict));
+});
+return data
+}
+
+    //Ajax call to save changes to file after submitting the editing form
+
+    $("#video-edit").submit(function (e) {
+        vid.pause();
+
+        data = get_data();
+
+        e.preventDefault();
+        // serialize the data for sending the form data.
+        //var serializedData = data;
+        // make POST ajax call
+       $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: '/ajax/save_transcript/',
+            headers:{
+        "X-CSRFToken": csrftoken
+    },
+            data: {'requestData':data, 'file': '{{ video.access_code }}', 'lang':'{{ video.language }}'},
+            success: function (response) {
+                $('#show-transcript').hide();
+                $('#show-response').show(500);
+
+            },
+            error: function error(response) {
+
+            }
+        })
+    })
+})
+</script>
+{% endblock javascript %}
