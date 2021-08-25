@@ -12,10 +12,12 @@ tmp/
 *.flac
 static_files/ableplayer/
 static_files/scss/
+static_files/css/
 static_files/img/
 static_files/admin/
 *.png
 *.jpg
+*.css
 *.jpeg
 .DS_Store
 static/
