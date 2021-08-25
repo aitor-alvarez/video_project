@@ -1,0 +1,60 @@
+div#video-and-meta-wrapper {
+    position: relative;
+    /* no width and height, this will be assigned dynamically */
+  }
+  div.meta {
+    position: absolute;
+    z-index: 10000;
+    display: none;
+  }
+  div#info,
+  div#instructions {
+    background-color: #ffc;
+    border: 3px solid #412C84;
+    color: #000;
+    font-size: 1.2em;
+    line-height: 1.25em;
+    padding: 0.5em;
+  }
+  div#info {
+    top: 11.111%; /* 40px */
+    left: 4.167%; /* 20px */
+    width: 41.667%; /* 200px */
+    height: auto;
+  }
+  div#instructions {
+    top: 66.667%; /* 240px */
+    left: 18.75%; /* 90px */
+    width: 41.667%; /* 200px */
+    height: auto;
+  }
+  div#instructions:focus,
+  div#terrill:focus,
+  div#terrill:hover {
+    border: 3px solid #C00;
+  }
+  div#terrill {
+    top: 11.111%; /* 40px */
+    left: 28.333%; /* 136px */
+    width: 25%; /* 120px */
+    height: 38.889%; /* 140px; */
+    background-color: #FFF;
+    border: 3px solid #412C84;
+    opacity: 0.3;
+  }
+  div#terrill:focus {
+    border: 3px solid yellow;
+  }
+  div#response {
+    top: 11.111%; /* 40px */
+    right: 16.667%; /* 80px */
+    width: 31.25%; /* 150px */
+    height: 25%; /* 90px */
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding-top: 5.556%; /* 20px */
+    text-align: center;
+  }
