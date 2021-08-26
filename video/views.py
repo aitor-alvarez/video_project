@@ -13,6 +13,7 @@ import webvtt
 import json
 import random
 import boto3
+import botocore
 
 
 
@@ -23,26 +24,49 @@ def home(request):
 	return render(request, 'video/home.html', {'videos':  videos_showcase})
 
 
-def showcase_videos(request, video_id=1):
+def showcase_videos(request, video_id=None):
+	s3 = boto3.resource('s3')
 	videos = Video.objects.filter(is_showcase=True)
 	if video_id is None:
 		video = videos[0]
 	else:
 		video = Video.objects.get(id=video_id)
 
-	if video.is_showcase:
-		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
-		if video.transcript_created == True:
-				transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
+	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
+	transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
+	try:
+		s3.Object('videos-techcenter', 'translations/' + str(video.pid)+'.vtt').load()
+		translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			translation_url = None
 
-		else:
-			transcript_url=None
-		if video.is_final==True:
-			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid)+'.vtt')
-		else:
-			translation_url=None
-	return render(request, 'video/showcase.html', {'videos':videos,'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
-		                                            :translation_url, 'video_object': video })
+	try:
+		s3.Object('videos-techcenter', 'annotations/cultural/' + str(video.pid)+'.vtt').load()
+		description_cultural = get_s3_url('videos-techcenter', 'annotations/cultural/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			description_cultural = None
+
+	try:
+		s3.Object('videos-techcenter',  'annotations/professional/' + str(video.pid) + '.vtt').load()
+		description_professional = get_s3_url('videos-techcenter', 'annotations/professional/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			description_professional = None
+
+	try:
+		s3.Object('videos-techcenter',  'annotations/linguistic/' + str(video.pid) + '.vtt').load()
+		description_linguistic = get_s3_url('videos-techcenter', 'annotations/linguistic/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			description_linguistic = None
+
+	return render(request, 'video/showcase.html', {'videos':videos,'video_url': video_url, 'transcript_url':transcript_url,
+	                                               'translation_url': translation_url, 'description_cultural_url': description_cultural,
+	                                              'description_professional_url': description_professional,
+	                                               'description_linguistic_url': description_linguistic,
+	                                               'video_object': video })
 
 
 
