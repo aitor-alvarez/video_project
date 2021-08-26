@@ -31,8 +31,9 @@
           </div>
     {% endif %}
           <br>
-<div id="video-and-meta-wrapper">
-  <video id="video1" preload="auto" width="480" height="360" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="true" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
+<div class="row">
+<div class="col-md-5 ">
+  <video id="video1" preload="auto" width="480" height="480" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="false" data-transcript-div="transcript" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
     <source type="video/mp4" src="{{ video_url }}" />
 
     <!-- Able Player will display tracks alphabetically by label -->
@@ -42,6 +43,9 @@
     {% endif %}
   </video>
 </div>
-          </div>
+
+<div class="col-md-7">
+<div id="transcript"></div>
+</div>
 </div>
 {% endblock %}

@@ -1,13 +1,14 @@
 {% extends 'base2.html' %}
 
 {% block content %}
+<div class="row">
     {% if error %}
 
         <h3 class="text-danger"><strong>This video is not public.</strong></h3>
 
     {% else %}
 {% if request.user == video_object.owner.user %}
-<div class="float-md-right">
+<div class="col-md-12 text-right">
 {% if video_object.is_final %}
 <button id="transcript_trans" type="button" class="btn btn-success ">Translate</button>
     {% else %}
@@ -15,10 +16,12 @@
     {% endif %}
 </div>
     {% endif %}
+        </div>
         <br>
         <br>
-<div id="video-and-meta-wrapper">
-  <video id="video1" preload="auto" width="480" height="480" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="true" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
+<div class="row">
+<div class="col-md-5 ">
+  <video id="video1" preload="auto" width="480" height="480" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="false" data-transcript-div="transcript" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
     <source type="video/mp4" src="{{ video_url }}" />
 
     <!-- Able Player will display tracks alphabetically by label -->
@@ -28,69 +31,20 @@
     {% endif %}
   </video>
 </div>
+
+<div class="col-md-7">
+<div id="transcript"></div>
+</div>
+</div>
     {% endif %}
 {% endblock %}
 
 {% block javascript %}
 <script type="application/javascript">
  $(document).ready(function() {
-     $('.able-transcript-area').css('height','1500px');
-     $('.able-transcript-area').show();
-     var videoDefaultWidth, videoDefaultHeight,
-     videoWidth, videoHeight;
 
-    $(window).on('load resize',function(event) {
-
-      if (event.type === 'load') {
-        // initializing for the first time
-        videoWidth = $('#video').width();
-        videoHeight = $('#video').height();
-      }
-      if (event.type === 'resize') {
-        // window has been resized.
-        // can't determine videoWidth via method used on load
-        // because video is now has an assigned (unresponsive) width
-        // Remove these attributes temporarily, then recalculate & reassign
-        $('#video-and-meta-wrapper').css({
-          'width': '',
-          'height': ''
-        });
-        videoWidth = $('#video').width();
-        videoHeight = $('#video').height();
-      }
-      // asign calculated width and height values to wrapper
-      $('#video-and-meta-wrapper').css({
-        'width': videoWidth + 'px',
-        'height': videoHeight + 'px'
-      });
-    });
-
-    // The rest is the same as Demo #8
-    // Handle clicks on the exposed overlay blocks
-    $('#instructions').on('focus',function() {
-      $('#terrill').attr('tabindex','0');
-    })
-    $('#terrill').on('click',function() {
-      toggleResponse();
-    });
-    $('#terrill').on('keypress',function(e) {
-      if (e.which === 13 || e.which === 32) {
-        toggleResponse();
-      }
-    });
   });
 
-  function toggleResponse() {
-      if ($('#response').is(':visible')) {
-          $('#response').hide();
-      }
-      else {
-          // response is an interactive element not included in metadata file
-          // therefore it doesn't disappear automatically
-          $('#response').show().delay(5000).fadeOut();
-      }
-      $('.able-transcript-area').css('display','block');
-  }
 
 </script>
 {% endblock %}
