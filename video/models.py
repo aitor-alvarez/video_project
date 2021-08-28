@@ -22,6 +22,12 @@ user_choices = (
 	('C', 'Student'),
 )
 
+program_choices = (
+	('A', 'Academic'),
+	('Y', 'Year'),
+	('S', 'Summer'),
+)
+
 
 class Profile(models.Model):
 	first_name = models.CharField(max_length=255)
@@ -71,7 +77,7 @@ class Program(models.Model):
 	start = models.DateField()
 	end = models.DateField()
 	language = models.ForeignKey('Language', on_delete=models.CASCADE)
-	program_years = models.CharField(max_length=255)
+	program_years = models.CharField(max_length=1, choices=program_choices)
 	students = models.ManyToManyField(Profile)
 
 	def get_events(self):
