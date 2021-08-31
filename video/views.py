@@ -80,7 +80,7 @@ class VideoView(LoginRequiredMixin, CreateView):
 		model = Video
 		template_name = 'video/video_form.html'
 		success_url = '/'
-		fields = ['file', 'type', 'event']
+		fields = ['is_public', 'is_internal', 'file', 'type', 'event']
 
 		def get_initial(self, *args, **kwargs):
 			profile = Profile.objects.filter(user=self.request.user)
@@ -88,12 +88,9 @@ class VideoView(LoginRequiredMixin, CreateView):
 			programs = Program.objects.filter(students__in=profile)
 			programs = list(programs.values_list('id', flat=True))
 			events = Event.objects.filter(program__in=programs)
-			if events:
-				initial = super(VideoView, self).get_initial(**kwargs)
-				initial['events'] = events
-				return initial
-			else:
-				HttpResponseRedirect('/')
+			initial = super(VideoView, self).get_initial(**kwargs)
+			initial['events'] = events
+			return initial
 
 
 		def form_valid(self, form):
@@ -103,7 +100,7 @@ class VideoView(LoginRequiredMixin, CreateView):
 			program = Program.objects.get(students__in=[profile])
 			language = program.language.language_code
 			video_form.access_code = pid
-			video_form.owner= profile
+			video_form.owner = profile
 			video_form.language = language
 			video_form.pid = pid
 			video_form.title = profile.first_name+' '+profile.last_name
@@ -385,3 +382,16 @@ def save_vtt_s3(request):
 				'msg': 'The file was not saved correctly'}
 		return JsonResponse(response)
 
+
+def update_consent(request, video_id):
+	context = {}
+	obj = Video.objects.get(id=video_id)
+
+	form = ConsentForm(request.POST or None, instance=obj)
+
+	if form.is_valid():
+		form.save()
+		return HttpResponseRedirect("/my-videos")
+	context["form"] = form
+
+	return render(request, "video/consent_update.html", context)

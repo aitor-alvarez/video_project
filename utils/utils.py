@@ -173,19 +173,12 @@ def translate_text(text, lang, project_id=getattr(settings, "GCLOUD_PROJECT", No
 
 def get_s3_url(bucket, key):
 	client = boto3.client('s3')
-	s3 = boto3.resource('s3')
-	try:
-		s3.Object(bucket, key).load()
-		url = client.generate_presigned_url('get_object',
+	url = client.generate_presigned_url('get_object',
 		                                    Params={
 			                                    'Bucket': bucket,
 			                                    'Key': key,
 		                                    },
 		                                    ExpiresIn=4200)
-	except botocore.exceptions.ClientError as e:
-		if e.response['Error']['Code'] == "404":
-			url = None
-
 	return url
 
 

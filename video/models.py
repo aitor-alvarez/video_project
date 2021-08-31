@@ -78,7 +78,7 @@ class Program(models.Model):
 	end = models.DateField()
 	language = models.ForeignKey('Language', on_delete=models.CASCADE)
 	program_years = models.CharField(max_length=1, choices=program_choices)
-	students = models.ManyToManyField(Profile)
+	students = models.ManyToManyField(Profile, blank=True)
 
 	def get_events(self):
 		events = Event.objects.filter(program=self)

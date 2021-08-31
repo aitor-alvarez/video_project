@@ -2,15 +2,21 @@
 
 {% block content %}
 <div class="row">
-          <div class="col-md-10 ml-auto mr-auto">
+          <div class="col-md-12 ml-auto mr-auto">
             <h2 class="text-center title">My Videos</h2>
             <br>
+          <a href="/upload/"><button type="button" class="btn btn-success ">Upload Video</button></a>
             <hr>
             <br>
 
                 {% for video in my_videos %}
+                 <div class="row">
+
                     <div class="col-md-12">
                         <div class="card">
+                        {% if video.thumb_created %}
+                        <img class="card-img " src="" alt="Card image cap">
+                        {% endif %}
                             <div class="card-header card-header-text card-header-primary">
                                 <div class="card-text">
                                     <h4 class="card-title">{{ video.title }} | {{ video.event }} {{ video.event.start }}</h4>
@@ -19,15 +25,27 @@
                                 <div class="card-body">
                                     <span><i class="material-icons">language</i> {{ video.event.program.language.language }}</span>
                                     <p><i class="material-icons">link</i><a href="/video/{{ video.id }}">View video</a></p>
+                                    <h5>Data consent</h5>
+                                    {% if video.is_internal %}
+                                    <span class="badge badge-pill badge-success">Internal</span>
+                                {% else %}
+                                    <span class="badge badge-pill badge-danger">Internal</span>
+                                {% endif %}
 
+                                {% if video.is_public %}
+                                    <span class="badge badge-pill badge-success">Public</span>
+                                {% else %}
+                                    <span class="badge badge-pill badge-danger">Public</span>
+                                {% endif %}
                                 </div>
+
+
                         </div>
+
                     </div>
+                 </div>
               {% endfor %}
           </div>
-<div class="col-md-2">
-            <a href="/upload/"><button type="button" class="btn btn-success ">Upload Video</button></a>
 
-        </div>
 </div>
 {% endblock %}

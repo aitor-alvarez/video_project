@@ -3,13 +3,10 @@ from .models import *
 from django import forms
 
 
-class VideoForm(ModelForm):
-	title = forms.HiddenInput()
-	language = forms.HiddenInput()
-	owner = forms.HiddenInput()
+class ConsentForm(ModelForm):
 
 	def __init__(self, *args, **kwargs):
-		super(VideoForm, self).__init__(*args, **kwargs)
+		super(ConsentForm, self).__init__(*args, **kwargs)
 		for name in self.fields.keys():
 			self.fields[name].widget.attrs.update({
 				'class': 'form-control',
@@ -17,7 +14,7 @@ class VideoForm(ModelForm):
 
 	class Meta:
 		model = Video
-		exclude =('created', 'metadata', 'url', 'pid', 'access_code', 'duration', 'is_showcase', 'title', 'owner')
+		fields = ('is_internal', 'is_public')
 
 
 class EventForm(ModelForm):

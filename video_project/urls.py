@@ -27,5 +27,6 @@ urlpatterns = [
 		path('ajax/enroll_user/', enroll_user),
 		path('ajax/save_transcript/', save_vtt_s3),
 		path('program/<int:program_id>/', program_detail, name='program_detail'),
-		path('generate/<int:video_id>/', generate_video, name='generate_video')
+		path('generate/<int:video_id>/', generate_video, name='generate_video'),
+		path('update_consent/<int:video_id>/', update_consent, name='update_consent')
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

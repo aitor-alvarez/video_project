@@ -1,11 +1,19 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
+{% load  video_tags %}
 
 {% block content %}
+
+{% if request.user.id|get_profile_type == 'A' or request.user.id|get_profile_type == 'B' %}
 <form action="." method="POST">
 
 {% csrf_token %}
 {{ form }}
 <button type="submit">SUBMIT</button>
 </form>
+{% else %}
+<div class="col-md-12">
+<h4>You do not have permission to access this page</h4>
 
+</div>
+{% endif %}
 {% endblock %}

@@ -1,6 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
+{% load  video_tags %}
 
 {% block content %}
+
+    {% if request.user.id|get_profile_type == 'A' or request.user.id|get_profile_type == 'B' %}
 
     <h3>Add event to program</h3>
 <form action="." method="POST">
@@ -14,4 +17,10 @@
 <button type="submit">Submit</button>
 </form>
 
+    {% else %}
+<div class="col-md-12">
+<h4>You do not have permission to access this page</h4>
+
+</div>
+{% endif %}
 {% endblock %}
