@@ -361,6 +361,19 @@ def save_vtt_s3(request):
 		data = request.POST.getlist('requestData[]', [])
 		filename = request.POST.get('file')
 		lang = request.POST.get('lang')
+		video_id = request.POST.get('video_id')
+		final = int(request.POST.get('final'))
+		final_video = int(request.POST.get('final_video'))
+		print(final)
+		if final == 1:
+			vid = Video.objects.get(id=video_id)
+			vid.transcript_completed = final
+			vid.save()
+		elif final_video == 1:
+			vid = Video.objects.get(id=video_id)
+			vid.is_final = final_video
+			vid.save()
+
 		data = [json.loads(d) for d in data]
 		vtt = WebVTT()
 		for d in data:

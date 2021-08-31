@@ -25,7 +25,7 @@
                                 <div class="card-body">
                                     <span><i class="material-icons">language</i> {{ video.event.program.language.language }}</span>
                                     <p><i class="material-icons">link</i><a href="/video/{{ video.id }}">View video</a></p>
-                                    <h5>Data consent</h5>
+                                    <h5>Data consent <a href="/update_consent/{{ video.id }}">(Update Consent)</a></h5>
                                     {% if video.is_internal %}
                                     <span class="badge badge-pill badge-success">Internal</span>
                                 {% else %}
