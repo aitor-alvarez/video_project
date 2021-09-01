@@ -25,6 +25,19 @@ def home(request):
 	return render(request, 'video/home.html', {'videos':  videos_showcase})
 
 
+@login_required
+def manage_programs(request):
+	profile = Profile.objects.get(user=request.user)
+	if profile.type == 'A':
+		programs = Program.objects.all()
+		events = Event.objects.all()
+		users = Profile.objects.filter(type__in=['A', 'B'])
+	elif profile.type == 'B':
+		programs = Program.objects.filter(language=profile.language)
+		events = Event.objects.filter(program__in=programs)
+	return render(request, 'video/manage.html', {'programs': programs, 'events': events, 'users': users})
+
+
 def showcase_videos(request, video_id=None):
 	s3 = boto3.resource('s3')
 	videos = Video.objects.filter(is_showcase=True)

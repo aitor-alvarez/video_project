@@ -7,9 +7,11 @@
 <div class="col-md-12">
 <nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
-    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Events</a>
-    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Programs</a>
+        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Programs and Students</a>
+    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="false">Events</a>
+      {% if request.user.id|get_profile_type == 'A' %}
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Users</a>
+          {% endif %}
   </div>
 </nav>
 
@@ -27,11 +29,13 @@
     </tr>
   </thead>
   <tbody>
+  {% for event in events %}
     <tr>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>{{ event.program }}</td>
+      <td>{{ event.start }}-{{ event.end }}</td>
+      <td>{{ event.city }} ({{ event.country }})</td>
     </tr>
+  {% endfor %}
   </tbody>
 </table>
 
@@ -51,21 +55,50 @@
     </tr>
   </thead>
   <tbody>
+  {% for program in programs %}
     <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>{{ program.name }}</td>
+      <td>{{ program.start }}</td>
+      <td>{{ program.end }}</td>
+      <td>{% if program.program_years == 'Y' %}{{ program.end|date:"Y" }}{% elif program.program_years == 'A' %}{{ program.start|date:"Y" }}-
+          {{ program.end|date:"Y" }}{% else %}{{ program.end|date:"Y" }}{% endif %}</td>
+      <td>{{ program.students.all.count }}</td>
+      <td><a href="/program/{{ program.id }}">Manage students and events</a></td>
     </tr>
+  {% endfor %}
   </tbody>
 </table>
 
 
 
   </div>
-  <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+  <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+       <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Institution</th>
+      <th scope="col">Role</th>
+
+    </tr>
+  </thead>
+  <tbody>
+<a href="/new/user"><button type="button" class="btn btn-success ">Add User</button></a>
+  {% for user in users %}
+    <tr>
+      <td>{{ user.first_name }}</td>
+      <td>{{ user.last_name }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.institution }}</td>
+      <td>{{ user.get_type_display }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+  </div>
 </div>
 </div>
 

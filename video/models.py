@@ -35,6 +35,7 @@ class Profile(models.Model):
 	email = models.EmailField(blank=True)
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	type = models.CharField(max_length=1, choices=user_choices, blank=True, default='C')
+	language = models.ForeignKey('Language', blank=True,  null=True, on_delete=models.CASCADE)
 	institution = models.ForeignKey('Institution', blank=True, null=True, on_delete=models.CASCADE)
 
 	def __str__(self):

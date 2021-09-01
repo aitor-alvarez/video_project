@@ -14,7 +14,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 		path('new/program/', ProgramView.as_view()),
 		path('video/<int:video_id>/', show_video),
-		path('manage/', TemplateView.as_view(template_name='video/manage.html')),
+		path('manage/', manage_programs),
 		path('new/user/', UserView.as_view()),
 		path('new/event/<int:program_id>/', EventView.as_view()),
 		path('users/', get_users),
