@@ -32,11 +32,12 @@
           <br>
 <div class="row">
 <div class="col-md-5 ">
+
   <video id="video1" preload="auto" width="480" height="480" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="false" data-transcript-div="transcript" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
     <source type="video/mp4" src="{{ video_url }}" />
 
-    <!-- Able Player will display tracks alphabetically by label -->
-    <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.language.language_code }}" label="{{ video_object.language.language }}"/>
+
+    <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.language|slice:'0:2' }}" label="{{ video_object.language.language }}"/>
       {% if translation_url %}
             <track kind="subtitles" src="{{ translation_url }}" srclang="en" label="English"/>
     {% endif %}

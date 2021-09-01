@@ -7,12 +7,15 @@
         <h3 class="text-danger"><strong>This video is not public.</strong></h3>
 
     {% else %}
+        {% csrf_token %}
 {% if request.user == video_object.owner.user %}
 <div class="col-md-12 text-right">
-{% if video_object.is_final %}
+{% if video_object.transcript_completed and not video_object.translation_created %}
 <button id="transcript_trans" type="button" class="btn btn-success ">Translate</button>
-    {% else %}
+    {% elif  not video_object.transcript_completed and not video_object.is_final %}
 <a href="/edit-transcript/{{ video_object.id }}"><button id="transcript_edit" type="button" class="btn btn-success ">Edit</button></a>
+    {% elif  video_object.translation_created %}
+<a href="/edit-transcript/{{ video_object.id }}/en"><button id="translation_edit" type="button" class="btn btn-success ">Edit Translation</button></a>
     {% endif %}
 </div>
     {% endif %}
@@ -25,7 +28,8 @@
     <source type="video/mp4" src="{{ video_url }}" />
 
     <!-- Able Player will display tracks alphabetically by label -->
-    <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.language.language_code }}" label="{{ video_object.language.language }}"/>
+
+    <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.language|slice:'0:2' }}" label="{{ video_object.language.language }}"/>
       {% if translation_url %}
             <track kind="subtitles" src="{{ translation_url }}" srclang="en" label="English"/>
     {% endif %}
@@ -43,8 +47,30 @@
 <script type="application/javascript">
  $(document).ready(function() {
 
+     var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+     //send transcript for translation
+
+     $('#transcript_trans').on('click', function () {
+
+          $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: '/ajax/translate_transcript/',
+            headers:{
+        "X-CSRFToken": csrftoken
+    },
+            data: {'file': '{{ video_object.access_code }}.vtt', 'lang':'{{ video.language }}',
+            'video_id': '{{ video_object.id }}'},
+            success: function (response) {
+                console.log(reponse);
+            },
+            error: function error(response) {
+
+            }
+        })
+
+     })
+
   });
-
-
 </script>
 {% endblock %}

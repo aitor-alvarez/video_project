@@ -14,6 +14,7 @@ import json
 import random
 import boto3
 import botocore
+from io import StringIO
 
 
 
@@ -328,7 +329,7 @@ def show_video(request, video_id):
 
 		else:
 			transcript_url=None
-		if video.is_final==True:
+		if video.translation_created == True:
 			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid)+'.vtt')
 		else:
 			translation_url=None
@@ -339,13 +340,22 @@ def show_video(request, video_id):
 		return render(request, 'video/video.html', {'error': True})
 
 
-def edit_transcript(request, video_id):
+def edit_transcript(request, video_id, lang=None):
 	video = Video.objects.get(id=video_id)
-	transcript_file = 'tmp/transcript/'+video.access_code+'.vtt'
-	transcript = get_s3_url('videos-techcenter', 'transcripts/'+video.access_code+'.vtt')
+	s3_client = boto3.client('s3')
+	if lang == None:
+		s3_response_object = s3_client.get_object(Bucket='videos-techcenter', Key='transcripts/' + video.access_code+'.vtt')
+		file_content = s3_response_object['Body'].read()
+		transcript_file = webvtt.read_buffer(StringIO(file_content.decode()))
+	elif lang == 'en':
+		s3_response_object = s3_client.get_object(Bucket='videos-techcenter',
+		                                          Key='translations/' + video.access_code + '.vtt')
+		file_content = s3_response_object['Body'].read()
+		transcript_file = webvtt.read_buffer(StringIO(file_content.decode()))
+
 	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid) + '.mp4')
 	output = []
-	for caption in webvtt.read(transcript_file):
+	for caption in transcript_file:
 		vtt_file = {}
 		vtt_file['start'] = caption.start
 		vtt_file['end'] = caption.end
@@ -356,7 +366,40 @@ def edit_transcript(request, video_id):
 	                                                 'video_url': video_url})
 
 
-def save_vtt_s3(request):
+def save_transcript_s3(request):
+	vtt, filename, lang = parse_vtt(request)
+	try:
+		vtt.save('tmp/transcript/'+filename+'.vtt')
+		s3_upload_file_to_bucket('tmp/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
+			                         {'ContentType': 'text/vtt', 'pid': filename,
+			                          'access_code': filename, 'language':lang})
+		os.remove('tmp/transcript/'+filename+'.vtt')
+		response = {
+				'msg': 'The file has been saved correctly'}
+	except:
+		response = {
+				'msg': 'The file was not saved correctly'}
+	return JsonResponse(response)
+
+
+
+def save_translation_s3(request):
+	vtt, filename, lang = parse_vtt(request)
+	try:
+		vtt.save('tmp/translation/'+filename+'.vtt')
+		s3_upload_file_to_bucket('tmp/translation/' + filename+'.vtt', 'videos-techcenter', 'translations/' + filename+'.vtt',
+			                         {'ContentType': 'text/vtt', 'pid': filename,
+			                          'access_code': filename, 'language':lang})
+		response = {
+				'msg': 'The file has been saved correctly'}
+	except:
+		response = {
+				'msg': 'The file was not saved correctly'}
+	return JsonResponse(response)
+
+
+
+def parse_vtt(request):
 	if request.is_ajax():
 		data = request.POST.getlist('requestData[]', [])
 		filename = request.POST.get('file')
@@ -383,17 +426,7 @@ def save_vtt_s3(request):
 				d['text']
 			)
 			vtt.captions.append(caption)
-		try:
-			vtt.save('tmp/transcript/'+filename+'.vtt')
-			s3_upload_file_to_bucket('tmp/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
-			                         {'ContentType': 'text/vtt', 'pid': filename,
-			                          'access_code': filename, 'language':lang})
-			response = {
-				'msg': 'The file has been saved correctly'}
-		except:
-			response = {
-				'msg': 'The file was not saved correctly'}
-		return JsonResponse(response)
+	return vtt, filename, lang
 
 
 def update_consent(request, video_id):
@@ -408,3 +441,32 @@ def update_consent(request, video_id):
 	context["form"] = form
 
 	return render(request, "video/consent_update.html", context)
+
+
+def translate_vtt(request):
+	if request.is_ajax():
+		filename = request.POST.get('file')
+		lang = request.POST.get('lang')
+		video_id = request.POST.get('video_id')
+		s3_client = boto3.client('s3')
+		video = Video.objects.get(id=video_id)
+		s3_response_object = s3_client.get_object(Bucket='videos-techcenter', Key='transcripts/' + filename)
+		file_content = s3_response_object['Body'].read()
+		file_content = webvtt.read_buffer(StringIO(file_content.decode()))
+		translate_vtt = generate_translation(file_content, lang)
+		try:
+			if translate_vtt is not None:
+				translate_vtt.save('tmp/translation/' + filename)
+				s3_upload_file_to_bucket('tmp/translation/' + filename, 'videos-techcenter', 'translations/' + filename,
+				                         {'ContentType': 'text/vtt', 'language': 'en'})
+				os.remove('tmp/translation/' + filename)
+				os.remove('tmp/transcript/' + filename)
+				video.translation_created = 1
+				video.save()
+				response = {
+					'msg': 'The translation was done correctly.'}
+
+		except:
+			response = {
+				'msg': 'The file was not translated correctly. Please try again.'}
+

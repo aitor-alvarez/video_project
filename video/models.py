@@ -66,6 +66,7 @@ class Video(models.Model):
 	transcript_created = models.BooleanField(default=0)
 	transcript_completed = models.BooleanField(default=0)
 	is_final = models.BooleanField(default=0)
+	translation_created = models.BooleanField(default=0)
 	thumb_created = models.BooleanField(default=0)
 	created = models.DateTimeField(default=datetime.datetime.now())
 

@@ -24,12 +24,10 @@
 
 <form id="video-edit" method="POST">
 {% csrf_token %}
-        <br>
-        <br>
         {% if not video.transcript_completed  %}
             <label>Mark as completed?:</label>
         <input name="final" id="final" type="checkbox" value="0" >
-         {% elif video.transcript_completed and not video.is_final%}
+         {% elif video.transcript_completed and not video.is_final %}
             <label>Mark as final?:</label>
         <input name="final_video" id="final_video" type="checkbox" value="0" >
             {% endif %}
@@ -37,7 +35,7 @@
         <div class="able-transcript-container">
         {% for out in output %}
          <button type="button" class="btn btn-success" data-start="{{ out.start }}">Clip ({{ out.start }}--{{ out.end }})</button>
-        <textarea class="form-control" data-start="{{ out.start }}" data-end="{{ out.end }}" rows="1">{{ out.text }}</textarea>
+        <textarea class="form-control" data-start="{{ out.start }}" data-end="{{ out.end }}" rows="2">{{ out.text }}</textarea>
             <br>
         {% endfor %}
         <br>
@@ -68,6 +66,17 @@
 <script>
 
 $(document).ready(function() {
+    let params = window.location.pathname.split('/');
+    var ind = $.inArray('en', params);
+    if (ind >0){
+        var lang = 'en';
+        var url = '/ajax/save_translation/';
+    }
+    else{
+        var lang = '{{ video.language }}';
+        var url = '/ajax/save_transcript/';
+
+    }
     $('#show-response').hide();
     var csrftoken = $("[name=csrfmiddlewaretoken]").val();
     var vid = document.getElementById("video");
@@ -100,7 +109,6 @@ return data
         else {var final=0;}
         if($('#final_video').is(':checked')){var final_video=1;}
         else {var final_video=0;}
-        alert(final);
         var data = get_data();
 
         e.preventDefault();
@@ -108,11 +116,11 @@ return data
        $.ajax({
             type: 'POST',
             dataType: 'JSON',
-            url: '/ajax/save_transcript/',
+            url: url,
             headers:{
         "X-CSRFToken": csrftoken
     },
-            data: {'requestData':data, 'file': '{{ video.access_code }}', 'lang':'{{ video.language }}',
+            data: {'requestData':data, 'file': '{{ video.access_code }}', 'lang':lang,
             'video_id': '{{ video.id }}', 'final': final, 'final_video':final_video},
             success: function (response) {
                 $('#show-transcript').hide();
