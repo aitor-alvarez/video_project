@@ -2,13 +2,27 @@
 {% load  video_tags %}
 
 {% block content %}
-{% if request.user.id|get_profile_type == 'A' or request.user.id|get_profile_type == 'B' %}
-<form action="." method="POST">
-
+{% if request.user.id|get_profile_type == 'A' %}
+   <h3>Add New User</h3>
+    <br>
 {% csrf_token %}
-{{ form }}
+{% for field in form %}
+{% if field.name == 'first_name' %}
+        <label>first name</label>
+    {{ field }}
+    <br>
+{% elif field.name == 'last_name' %}
+     <label>last name</label>
+    {{ field }}
+    <br>
 
-<button type="submit">SUBMIT</button>
+ {% else %}
+    <label>{{ field.name }}</label>
+    {{ field }}
+    <br>
+{% endif %}
+    {% endfor %}
+<button type="submit">Submit</button>
 </form>
 {% else %}
 <div class="col-md-12">

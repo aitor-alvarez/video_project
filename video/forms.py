@@ -29,3 +29,17 @@ class EventForm(ModelForm):
 	class Meta:
 		model = Event
 		fields = '__all__'
+
+
+class UserForm(ModelForm):
+	email = forms.EmailField(required=True)
+	def __init__(self, *args, **kwargs):
+		super(UserForm, self).__init__(*args, **kwargs)
+		for name in self.fields.keys():
+			self.fields[name].widget.attrs.update({
+				'class': 'form-control',
+			})
+
+	class Meta:
+		model = Profile
+		fields = ('first_name', 'last_name', 'email', 'type', 'institution',)

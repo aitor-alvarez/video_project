@@ -30,8 +30,8 @@ program_choices = (
 
 
 class Profile(models.Model):
-	first_name = models.CharField(max_length=255)
-	last_name = models.CharField(max_length=255)
+	first_name = models.CharField(max_length=255, verbose_name="First Name")
+	last_name = models.CharField(max_length=255, verbose_name="Last Name")
 	email = models.EmailField(blank=True)
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	type = models.CharField(max_length=1, choices=user_choices, blank=True, default='C')

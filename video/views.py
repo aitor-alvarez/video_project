@@ -140,8 +140,8 @@ class ProgramView(LoginRequiredMixin, CreateView):
 class UserView(LoginRequiredMixin, CreateView):
 	model = Profile
 	template_name = 'video/user_form.html'
-	fields = ('first_name', 'last_name', 'email', 'type', 'institution')
-	success_url = '/'
+	form_class = UserForm
+	success_url = '/manage'
 
 	def get_initial(self, *args, **kwargs):
 		profile = Profile.objects.get(user= self.request.user)
