@@ -9,9 +9,9 @@
 <form action="." method="POST">
 {% csrf_token %}
 {% for field in form %}
-
         {{ field.name }}
     {{ field }}
+    <br>
 <br>
     {% endfor %}
 <button type="submit">Submit</button>
@@ -23,4 +23,24 @@
 
 </div>
 {% endif %}
+{% endblock %}
+
+{% block javascript %}
+
+<script type="application/javascript">
+
+   $(document).ready(function() {
+
+       $('.datepicker').datetimepicker({
+
+                 format: 'YYYY-MM-DD',
+                 widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'top'
+        }
+           });
+
+    });
+
+</script>
 {% endblock %}

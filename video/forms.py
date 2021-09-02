@@ -22,7 +22,12 @@ class EventForm(ModelForm):
 		super(EventForm, self).__init__(*args, **kwargs)
 		self.fields['program'].disabled = True
 		for name in self.fields.keys():
-			self.fields[name].widget.attrs.update({
+			if name == 'start' or name == 'end':
+				self.fields[name].widget.attrs.update({
+					'class': 'form-control datepicker',
+				})
+			else:
+				self.fields[name].widget.attrs.update({
 				'class': 'form-control',
 			})
 

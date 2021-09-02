@@ -55,6 +55,7 @@
       <table class="table">
   <thead>
     <tr>
+      <th scope="col">Phase</th>
       <th scope="col">Program</th>
       <th scope="col">Date</th>
       <th scope="col">Location</th>
@@ -63,6 +64,7 @@
   <tbody>
   {% for event in events %}
     <tr>
+      <td>{{ event.get_phase_display }}</td>
       <td>{{ event.program }}</td>
       <td>{{ event.start }}-{{ event.end }}</td>
       <td>{{ event.city }} ({{ event.country }})</td>

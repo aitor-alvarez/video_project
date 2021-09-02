@@ -1,28 +1,48 @@
 {% extends 'base2.html' %}
 
 {% block content %}
+<div class="col-md-12">
+<h3>Program Details</h3>
 
-        {{ program.name }}
-        {{ program.language }}
-        {{ program.start }}
-        {{ program.end }}
     <hr>
-    {% for event in program.get_events %}
-        {{ event }}
+
+    <h4><strong>Program:</strong> {{ program.name }} ({{ program.start }}-{{ program.end }})</h4>
+    <h4><strong>Events:</strong></h4>
+    <ul>
+        {% for event in program.get_events %}
+        <li>{{ event }}</li>
     {% endfor %}
+    </ul>
 
-    <a href="/new/event/{{ program.id }}/"><button>Create event</button></a>
-
+    <a href="/new/event/{{ program.id }}/"><button type="button" class="btn btn-success ">Add Event</button></a>
+<hr>
 <div id="students">
-<h3>Students in the program</h3>
+<h4><strong>Students registered:</strong></h4>
 
+ <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Institution</th>
+
+    </tr>
+  </thead>
+  <tbody>
+<hr>
 {% for student in program.students.all %}
+    <tr>
+      <td>{{ student.first_name }}</td>
+      <td>{{ student.last_name }}</td>
+      <td>{{ student.user.email }}</td>
+      <td>{{ student.institution }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 
-    {{ student }}
-
-{% endfor %}
-
-<button id="add_student">Add student to the program</button>
+<button id="add_student" type="button" class="btn btn-success ">Add student to the program</button>
 <div id="student-form">
     <h4>Search a user by email:</h4>
     <form id="registration" action="." method="POST">
@@ -37,6 +57,8 @@
     <p id="enroll"></p>
 
 </div>
+</div>
+
 </div>
 {% endblock %}
 
