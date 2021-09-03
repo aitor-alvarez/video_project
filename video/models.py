@@ -63,7 +63,7 @@ class Video(models.Model):
 	is_internal = models.BooleanField(default=0)
 	owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
 	event = models.ForeignKey('Event', on_delete=models.CASCADE)
-	duration = models.IntegerField(null=True, blank=True)
+	duration = models.DurationField(null=True, blank=True)
 	transcript_created = models.BooleanField(default=0)
 	transcript_completed = models.BooleanField(default=0)
 	is_final = models.BooleanField(default=0)
@@ -96,11 +96,25 @@ class Event(models.Model):
 	start = models.DateField()
 	end = models.DateField()
 	phase = models.CharField(max_length=1, choices=phases)
-	city = models.CharField(max_length=155)
-	country = models.CharField(max_length=155)
+	city = models.ForeignKey('Location', on_delete=models.CASCADE)
+	country = models.ForeignKey('Country', on_delete=models.CASCADE)
 
 	def __str__(self):
 		return self.program.name+' ('+self.get_phase_display()+')'
+
+
+class Location(models.Model):
+	name = models.CharField(max_length=255, blank=False)
+
+	def __str__(self):
+		return self.name
+
+
+class Country(models.Model):
+	name = models.CharField(max_length=255, blank=False)
+
+	def __str__(self):
+		return self.name
 
 
 class Language(models.Model):

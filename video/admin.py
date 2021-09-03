@@ -7,4 +7,6 @@ admin.site.register(Program)
 admin.site.register(Event)
 admin.site.register(Language)
 admin.site.register(Institution)
+admin.site.register(Location)
+admin.site.register(Country)
 
