@@ -1,0 +1,66 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="row">
+          <div class="col-md-6 ml-auto mr-auto">
+              <h2 class="text-center title">Video Archive</h2>
+          <br>
+            {% for video in videos %}
+              <div class="card">
+                            <div class="card-header card-header-text card-header-primary">
+                                <div class="card-text">
+                                    <h4 class="card-title">{{ video.0.title }} | {{ video.0.event }} {{ video.0.event.start }}</h4>
+                                </div>
+                            </div>
+                                <div class="card-body">
+                                <p><img class="card-img" src="{{ video.1 }}" alt="Card image cap"></p>
+                                    <span><i class="material-icons">language</i> {{ video.0.event.program.language.language }}</span>
+                                    <p><i class="material-icons">link</i><a href="/video/{{ video.0.id }}">View video</a></p>
+
+                                    {% if video.0.is_internal %}
+                                    <span class="badge badge-pill badge-success">Internal</span>
+                                {% else %}
+                                    <span class="badge badge-pill badge-danger">Internal</span>
+                                {% endif %}
+
+                                {% if video.0.is_public %}
+                                    <span class="badge badge-pill badge-success">Public</span>
+                                {% else %}
+                                    <span class="badge badge-pill badge-danger">Public</span>
+                                {% endif %}
+                                </div>
+                        </div>
+          {% endfor %}
+
+          {% if videos.has_other_pages %}
+  <ul class="pagination">
+    {% if videos.has_previous %}
+      <li><a href="?page={{ videos.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in videos.paginator.page_range %}
+      {% if users.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if videos.has_next %}
+      <li><a href="?page={{ videos.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+
+          </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script type="application/javascript">
+
+</script>
+{% endblock %}

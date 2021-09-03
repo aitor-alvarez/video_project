@@ -16,6 +16,8 @@ import boto3
 import botocore
 from io import StringIO
 import uuid
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 
 
@@ -89,6 +91,27 @@ def showcase_videos(request, video_id=None):
 def my_videos(request):
 	videos = Video.objects.filter(owner__user=request.user)
 	return render(request, 'video/my_videos.html', {'my_videos':  videos})
+
+
+@login_required
+def archive_view(request):
+	profile = Profile.objects.get(user=request.user)
+	if profile.type == 'A':
+		videos = Video.objects.all()
+	elif profile.type == 'B':
+		videos = Video.objects.filter(is_public=True, is_internal=True)
+	videos = [(v, get_s3_url('videos-techcenter', 'annotations/cultural/' + str(v.pid) + '.jpg')) for v in videos]
+	page = request.GET.get('page', 1)
+	paginator = Paginator(videos, 20)
+
+	try:
+		video_page = paginator.page(page)
+	except PageNotAnInteger:
+		video_page = paginator.page(1)
+	except EmptyPage:
+		video_page = paginator.page(paginator.num_pages)
+
+	return render(request, 'video/archive.html', {'videos':video_page})
 
 
 class VideoView(LoginRequiredMixin, CreateView):

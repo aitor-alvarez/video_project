@@ -27,6 +27,7 @@ urlpatterns = [
 		path('programs/', list_programs),
 		path('ajax/search_user/', search_user),
 		path('ajax/enroll_user/', enroll_user),
+		path('archive/', archive_view),
 		path('ajax/save_transcript/', save_transcript_s3),
 		path('ajax/save_translation/', save_translation_s3),
 		path('ajax/translate_transcript/', translate_vtt),
