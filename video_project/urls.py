@@ -4,6 +4,7 @@ from video.views import *
 from django.views.generic import TemplateView
 from django.conf.urls.static import static
 
+admin.site.site_header = 'Flagship Video Project | Admin Panel'
 urlpatterns = [
 		path('', home),
 		path('about/', TemplateView.as_view(template_name='video/about.html')),

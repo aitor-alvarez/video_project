@@ -15,6 +15,7 @@ import random
 import boto3
 import botocore
 from io import StringIO
+import uuid
 
 
 
@@ -153,7 +154,9 @@ class UserView(LoginRequiredMixin, CreateView):
 
 	def form_valid(self, form):
 		form.save(commit=False)
-		user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'])
+		password = uuid.uuid1()
+		password = str(password.hex[0:6])
+		user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'], password=password)
 		profile = Profile.objects.get(id=user.id)
 		profile.user = user
 		profile.email = form.cleaned_data['email']
@@ -161,7 +164,7 @@ class UserView(LoginRequiredMixin, CreateView):
 		profile.last_name = form.cleaned_data['last_name']
 		profile.type = form.cleaned_data['type']
 		profile.save()
-		return redirect('/')
+		return redirect('/manage')
 
 
 @login_required
