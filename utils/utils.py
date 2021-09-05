@@ -57,8 +57,8 @@ def extract_audio_from_video(video_name):
 	if video_name.endswith('.mp4'):
 		output_file = 'tmp/audio/'+video_name.replace('mp4', 'flac')
 		try:
-			AudioSegment.from_file('tmp/video/'+video_name).export(output_file, format='flac')
-			return output_file
+			audio = AudioSegment.from_file('tmp/video/'+video_name).export(output_file, format='flac')
+			return output_file, audio.duration_seconds
 		except:
 			return None
 	else:

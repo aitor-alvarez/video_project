@@ -313,8 +313,10 @@ def extract_audio_and_transcript(request):
 		video_file = request.POST.get('video_file', None)
 		language = request.POST.get('language', None)
 		access_code = request.POST.get('access_code', None)
-		audio_file = extract_audio_from_video(video_file.split('/')[-1])
+		audio_file, duration = extract_audio_from_video(video_file.split('/')[-1])
 		video = Video.objects.get(id=video_id)
+		video.duration = duration
+		video.save()
 		if audio_file is not None:
 			file_url, blob = upload_to_gcs(audio_file, 'flagship-videos')
 			speech_txt_response = process_speech_to_txt(file_url, language)
@@ -342,6 +344,7 @@ def extract_audio_and_transcript(request):
 					os.remove(video_file)
 					os.remove(audio_file)
 					os.remove(thumb_file)
+					os.remove('tmp/transcript/'+vtt_filename)
 					blob.delete()
 					response = {
 						'msg': 'Transcript generated successfully.'}
