@@ -15,6 +15,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 		path('new/program/', ProgramView.as_view()),
 		path('video/<int:video_id>/', show_video),
+		path('video/<str:access_code>/', show_private_video),
 		path('manage/', manage_programs),
 		path('new/user/', UserView.as_view()),
 		path('new/event/<int:program_id>/', EventView.as_view()),

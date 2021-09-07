@@ -31,6 +31,9 @@ def home(request):
 @login_required
 def manage_programs(request):
 	profile = Profile.objects.get(user=request.user)
+	programs = Program.objects.all()
+	events = Event.objects.all()
+	users = Profile.objects.all()
 	if profile.type == 'A':
 		programs = Program.objects.all()
 		events = Event.objects.all()
@@ -332,7 +335,7 @@ def extract_audio_and_transcript(request):
 					video.save()
 					try:
 						thumb_file = 'tmp/thumbs/'+access_code+'.jpg'
-						thumb = generate_thumb(video_file, thumb_file, 480)
+						thumb = generate_thumb('tmp/video/'+access_code+'.mp4', thumb_file, 480)
 						s3_upload_file_to_bucket(thumb_file, 'videos-techcenter',
 						                         'thumbs/' +access_code+'.jpg',
 						                         {'ContentType': 'image/jpeg', 'pid': access_code,
@@ -341,11 +344,14 @@ def extract_audio_and_transcript(request):
 						video.save()
 					except:
 						print("no thumb")
-					os.remove(video_file)
-					os.remove(audio_file)
-					os.remove(thumb_file)
-					os.remove('tmp/transcript/'+vtt_filename)
-					blob.delete()
+					try:
+						os.remove(video_file)
+						os.remove(audio_file)
+						os.remove('tmp/transcript/'+vtt_filename)
+						blob.delete()
+						os.remove(thumb_file)
+					except:
+						None
 					response = {
 						'msg': 'Transcript generated successfully.'}
 				else:
@@ -381,6 +387,22 @@ def show_video(request, video_id):
 	else:
 		return render(request, 'video/video.html', {'error': True})
 
+
+def show_private_video(request, access_code):
+	video = Video.objects.get(access_code=access_code)
+	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
+	if video.transcript_created == True:
+			transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
+
+	else:
+		transcript_url=None
+	if video.translation_created == True:
+		translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid)+'.vtt')
+	else:
+		translation_url=None
+
+	return render(request, 'video/private_video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
+		                                            :translation_url, 'video_object': video})
 
 def edit_transcript(request, video_id, lang=None):
 	video = Video.objects.get(id=video_id)

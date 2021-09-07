@@ -11,7 +11,7 @@
 
 {% csrf_token %}
 {% for field in form %}
-    {% if field.name == 'is_public' %}
+    {% if field.name == 'is_internal' %}
 <h3><strong>Consent for Internal Use</strong></h3>
         <br>
         <p>I hereby grant permission to the Language Flagship Technology Innovation Center (Tech Center) and NSEP/DLNSEO
@@ -20,15 +20,15 @@
             US government employees or contracted employees on a need-to-know basis. I understand that my name and a brief description
             of my program participation (name of program, year, home institution, host institution and host country)
             as well as a brief description of the topic of my presentation will be attached to this video. </p>
-        <label for="id_is_public"><strong>I grant permission to post this video on the internal website for the Flagship community:</strong></label>
+        <label for="id_is_internal"><strong>I grant permission to post this video on the internal website for the Flagship community:</strong></label>
         {% if field.value  %}
-        <input type="checkbox" name="is_public" value="1" id="id_is_public" checked>
+        <input type="checkbox" name="is_internal" value="1" id="id_is_internal" checked>
         {% else %}
-            <input type="checkbox" name="is_public" value="0" id="id_is_public">
+            <input type="checkbox" name="is_internal" value="0" id="id_is_internal">
         {% endif %}
         <br>
         <hr>
-         {% elif field.name == 'is_internal' %}
+         {% elif field.name == 'is_public' %}
         <h3><strong>Consent for Public Use</strong></h3>
         <br>
         <p>I hereby grant permission to the Language Flagship Technology Innovation Center (Tech Center) and NSEP/DLNSEO to
@@ -36,11 +36,11 @@
             public to showcase participants’ language proficiency and professional performance in the target language.
             I understand that my name and a brief description of my program participation (name of program, year, home institution,
             host institution and host country) as well as a brief description of the topic of my presentation will be attached to this video. </p>
-        <label for="id_is_internal"><strong> I grant permission to post this video on the public website for the Flagship community:</strong></label>
+        <label for="id_is_public"><strong> I grant permission to post this video on the public website for the Flagship community:</strong></label>
         {% if field.value is True%}
-            <input type="checkbox" name="is_internal" value="1" id="id_is_internal" checked>
+            <input type="checkbox" name="is_public" value="1" id="id_is_public" checked>
         {% else %}
-            <input type="checkbox" name="is_internal" value="0" id="id_is_internal">
+            <input type="checkbox" name="is_public" value="0" id="id_is_public">
          {% endif %}
         <br>
         <hr>

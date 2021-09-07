@@ -57,8 +57,9 @@ def extract_audio_from_video(video_name):
 	if video_name.endswith('.mp4'):
 		output_file = 'tmp/audio/'+video_name.replace('mp4', 'flac')
 		try:
-			audio = AudioSegment.from_file('tmp/video/'+video_name).export(output_file, format='flac')
-			return output_file, audio.duration_seconds
+			audio = AudioSegment.from_file('tmp/video/'+video_name)
+			audio.export(output_file, format='flac')
+			return output_file, datetime.timedelta(seconds=int(audio.duration_seconds))
 		except:
 			return None
 	else:
@@ -185,13 +186,7 @@ def get_s3_url(bucket, key):
 def generate_thumb(mp4_file, out_file, width):
 	in_file = ffmpeg.input(mp4_file)
 	try:
-		(
-		ffmpeg
-			.input(in_file, ss=2)
-			.filter('scale', width, -1)
-			.output(out_file, vframes=1)
-			.run()
-		)
+		ffmpeg.input(in_file, ss=2).filter('scale', width, -1).output(out_file, vframes=1).run()
 		return out_file
 	except:
 		return None
