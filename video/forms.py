@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from .models import *
 from django import forms
-
+from .models import video_types, phases
 
 class ConsentForm(ModelForm):
 
@@ -47,4 +47,37 @@ class UserForm(ModelForm):
 
 	class Meta:
 		model = Profile
-		fields = ('first_name', 'last_name', 'email', 'type', )
+		fields = ('first_name', 'last_name', 'email', 'type',)
+
+
+class FilterResultsForm(forms.Form):
+	years =(('2017', 2017), ('2018', 2018), ('2019',2019), ('2020', 2020), ('2021', 2021), ('2022', 2022), ('2023', 2023), ('2024',2024))
+	program = forms.ModelChoiceField(
+				widget=forms.Select,
+        queryset= Program.objects.all())
+	institution = forms.ModelChoiceField(
+				widget=forms.Select,
+        queryset= Institution.objects.all()
+	)
+	year = forms.ChoiceField(
+				widget=forms.Select,
+        choices= years
+	)
+	type = forms.ChoiceField(
+				widget=forms.Select,
+        choices= video_types
+	)
+	location = forms.ModelChoiceField(
+				widget=forms.Select,
+        queryset= Location.objects.all()
+	)
+	phase = forms.ChoiceField(
+				widget=forms.Select,
+        choices= phases
+	                          )
+	def __init__(self, *args, **kwargs):
+		super(FilterResultsForm, self).__init__(*args, **kwargs)
+		for name in self.fields.keys():
+			self.fields[name].widget.attrs.update({
+				'class': 'form-control',
+			})

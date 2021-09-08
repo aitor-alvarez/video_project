@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect
 from utils.utils import *
 from django.http import JsonResponse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
 import os
-import uuid
 from botocore.exceptions import ClientError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from video.forms import *
@@ -17,7 +16,7 @@ import botocore
 from io import StringIO
 import uuid
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from django.db.models import Q
 
 
 
@@ -98,11 +97,36 @@ def my_videos(request):
 
 @login_required
 def archive_view(request):
-	profile = Profile.objects.get(user=request.user)
-	if profile.type == 'A':
-		videos = Video.objects.all()
-	elif profile.type == 'B':
-		videos = Video.objects.filter(is_public=True, is_internal=True)
+	form = FilterResultsForm()
+	if request.is_ajax():
+		program = request.GET.get('program')
+		institution = request.GET.get('institution')
+		year = request.GET.get('year')
+		type = request.GET.get('type')
+		location = request.GET.get('location')
+		phase = request.GET.get('phase')
+		if program is None:
+			program = ''
+		if institution is None:
+			institution=''
+		if year is None:
+			year =''
+		if type is None:
+			type = ''
+		if location is None:
+			location = ''
+		if phase is None:
+			phase = ''
+
+		videos = Video.objects.filter(Q(event__program=program) | Q(owner__institution=institution) | Q(type=type)
+		                              | Q(event__city=location) | Q(phase = phase))
+	else:
+		profile = Profile.objects.get(user=request.user)
+		if profile.type == 'A':
+			videos = Video.objects.all()
+		elif profile.type == 'B':
+			videos = Video.objects.filter(is_public=True, is_internal=True)
+
 	videos = [(v, get_s3_url('videos-techcenter', 'annotations/cultural/' + str(v.pid) + '.jpg')) for v in videos]
 	page = request.GET.get('page', 1)
 	paginator = Paginator(videos, 20)
@@ -113,8 +137,7 @@ def archive_view(request):
 		video_page = paginator.page(1)
 	except EmptyPage:
 		video_page = paginator.page(paginator.num_pages)
-
-	return render(request, 'video/archive.html', {'videos':video_page})
+	return render(request, 'video/archive.html', {'videos':video_page, 'form': form})
 
 
 class VideoView(LoginRequiredMixin, CreateView):
@@ -471,7 +494,6 @@ def parse_vtt(request):
 		video_id = request.POST.get('video_id')
 		final = int(request.POST.get('final'))
 		final_video = int(request.POST.get('final_video'))
-		print(final)
 		if final == 1:
 			vid = Video.objects.get(id=video_id)
 			vid.transcript_completed = final

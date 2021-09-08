@@ -43,6 +43,7 @@
          </div>
 <br>
 <input type="submit" value="Save" class="btn btn-info">
+    <a href="/video/{{ video.id }}/" class="btn btn-danger">Cancel</a>
 </form>
 </div>
     {% endif %}
@@ -52,10 +53,9 @@
     <div id="show-response">
 <h4>The transcript has been saved</h4>
         <br>
+        <br>
         <a href="/edit-transcript/{{ video.id }}"><button type="button" class="btn btn-success ">Continue editing</button></a>
         <a href="/video/{{ video.id }}"><button type="button" class="btn btn-success ">Go back to video</button></a>
-
-
     </div>
 </div>
 
@@ -91,7 +91,7 @@ function setCurTime(t) {
   vid.currentTime=t;
 }
 
-//Get all th textarea elements and create a dict-like JSON object
+//Get all the textarea elements and create a dict-like JSON object
 function get_data() {
         data=[]
         $("textarea").each(function(){

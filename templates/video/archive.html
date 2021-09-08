@@ -2,19 +2,67 @@
 
 {% block content %}
 <div class="row">
-          <div class="col-md-6 ml-auto mr-auto">
+          <div class="col-sm-12 ml-auto mr-auto">
               <h2 class="text-center title">Video Archive</h2>
           <br>
+          <br>
+          <div class="row">
+           <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Filters
+  </a>
+          <br>
+          <br>
+          </div>
+          <div class="row">
+            <div class="collapse" id="collapseExample">
+              <article class="card-group-item">
+                  <form id="filter_results" action="." method="get">
+                      {% csrf_token %}
+                  <div class="row">
+                        {% for field in form %}
+                        {% if field.name == 'program' or field.name == 'institution' %}
+                            <div class="col-md-4">
+                                <label>{{ field.name }}</label>
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                            <br>
+                         {% if field.name == 'year' or field.name == 'type' %}
+                            <div class="col-sm-4">
+                                <label>{{ field.name }}</label>
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                            <br>
+                         {% if field.name == 'location' or field.name == 'phase' %}
+                            <div class="col-sm-4">
+                                <label>{{ field.name }}</label>
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                            <br>
+                      {% endfor %}
+                  </div>
+                  </form>
+
+              </article>
+            </div>
+          </div>
+          <hr>
+          <br>
             {% for video in videos %}
+                <div class="col-md-10 ml-auto mr-auto">
               <div class="card">
                             <div class="card-header card-header-text card-header-primary">
                                 <div class="card-text">
-                                    <h4 class="card-title">{{ video.0.title }} | {{ video.0.event }} {{ video.0.event.start }}</h4>
+                                    <h4 class="card-title">{{ video.0.title }} | {{ video.0.event }} {{ video.0.event.program.get_program_years_display }} Year {{ video.0.event.end |date:"Y" }}</h4>
                                 </div>
                             </div>
                                 <div class="card-body">
                                 <p><img class="img-thumbnail float-md-right" src="{{ video.1 }}" alt="Card image cap"></p>
-                                    <span><i class="material-icons">language</i> {{ video.0.event.program.language.language }}</span>
+                                    <p><i class="material-icons">language</i> {{ video.0.event.program.language.language }}</p>
+                                    <p><i class="material-icons">place</i> {{ video.0.event.city }}, {{ video.0.event.country }}</p>
+                                     <p><i class="material-icons">timer</i> {{ video.0.duration }}</p>
                                     <p><i class="material-icons">link</i><a href="/video/{{ video.0.id }}">View video</a></p>
 
                                     {% if video.0.is_internal %}
@@ -30,6 +78,7 @@
                                 {% endif %}
                                 </div>
                         </div>
+
           {% endfor %}
 
           {% if videos.has_other_pages %}
@@ -56,11 +105,44 @@
 
           </div>
 </div>
+    </div>
 
 {% endblock %}
 
 {% block javascript %}
 <script type="application/javascript">
 
+
+$(document).ready(function() {
+
+    $("#filter_results").submit(function (e) {
+        var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        var program = $('#id_program').find(":selected").text();
+        var institution = $('#id_institution').find(":selected").text();
+        var year = $('#id_year').find(":selected").text();
+        var phase = $('#id_phase').find(":selected").text();
+        var location = $('#id_location').find(":selected").text();
+        var type = $('#id_type').find(":selected").text();
+        e.preventDefault();
+
+       $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: '/archive/',
+            headers:{
+        "X-CSRFToken": csrftoken
+    },
+            data: {'program': program, 'institution': institution, 'year': year,
+            'type': type, 'phase': phase, 'phase', 'location': location},
+            success: function (response) {
+
+            },
+            error: function error(response) {
+
+            }
+        })
+    })
+
+})
 </script>
 {% endblock %}

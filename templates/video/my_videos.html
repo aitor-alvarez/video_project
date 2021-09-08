@@ -19,7 +19,7 @@
                         {% endif %}
                             <div class="card-header card-header-text card-header-primary">
                                 <div class="card-text">
-                                    <h4 class="card-title">{{ video.title }} | {{ video.event }} {{ video.event.start }}</h4>
+                                    <h4 class="card-title">{{ video.title }} | {{ video.event }} {{ video.event.program.get_program_years_display }} Year {{ video.event.end |date:"Y" }}</h4>
                                 </div>
                             </div>
                                 <div class="card-body">
