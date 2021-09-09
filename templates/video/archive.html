@@ -16,7 +16,7 @@
           <div class="row">
             <div class="collapse" id="collapseExample">
               <article class="card-group-item">
-                  <form id="filter_results" action="." method="get">
+                  <form id="filter_results" action="." method="POST">
                       {% csrf_token %}
                   <div class="row">
                         {% for field in form %}
@@ -43,6 +43,7 @@
                             <br>
                       {% endfor %}
                   </div>
+                  <input type="submit" class="float-md-right" value="Submit" />
                   </form>
 
               </article>
@@ -107,42 +108,4 @@
 </div>
     </div>
 
-{% endblock %}
-
-{% block javascript %}
-<script type="application/javascript">
-
-
-$(document).ready(function() {
-
-    $("#filter_results").submit(function (e) {
-        var csrftoken = $("[name=csrfmiddlewaretoken]").val();
-        var program = $('#id_program').find(":selected").text();
-        var institution = $('#id_institution').find(":selected").text();
-        var year = $('#id_year').find(":selected").text();
-        var phase = $('#id_phase').find(":selected").text();
-        var location = $('#id_location').find(":selected").text();
-        var type = $('#id_type').find(":selected").text();
-        e.preventDefault();
-
-       $.ajax({
-            type: 'POST',
-            dataType: 'JSON',
-            url: '/archive/',
-            headers:{
-        "X-CSRFToken": csrftoken
-    },
-            data: {'program': program, 'institution': institution, 'year': year,
-            'type': type, 'phase': phase, 'phase', 'location': location},
-            success: function (response) {
-
-            },
-            error: function error(response) {
-
-            }
-        })
-    })
-
-})
-</script>
 {% endblock %}

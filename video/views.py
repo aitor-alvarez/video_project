@@ -98,29 +98,31 @@ def my_videos(request):
 @login_required
 def archive_view(request):
 	form = FilterResultsForm()
-	if request.is_ajax():
-		program = request.GET.get('program')
-		institution = request.GET.get('institution')
-		year = request.GET.get('year')
-		type = request.GET.get('type')
-		location = request.GET.get('location')
-		phase = request.GET.get('phase')
-		if program is None:
-			program = ''
-		if institution is None:
-			institution=''
-		if year is None:
-			year =''
-		if type is None:
-			type = ''
-		if location is None:
-			location = ''
-		if phase is None:
-			phase = ''
-
-		videos = Video.objects.filter(Q(event__program=program) | Q(owner__institution=institution) | Q(type=type)
-		                              | Q(event__city=location) | Q(phase = phase))
-	else:
+	videos = Video.objects.all()
+	if request.method =='POST':
+		filters = {}
+		program = request.POST.get('program')
+		institution = request.POST.get('institution')
+		year = request.POST.get('year')
+		type = request.POST.get('type')
+		location = request.POST.get('location')
+		phase = request.POST.get('phase')
+		if program != '' :
+			filters['event__program_id'] = program
+		if institution != '' :
+			filters['owner__institution_id'] = institution
+		if type != '' :
+			filters['type'] = type
+		if location != '':
+			filters['event__city_id'] = location
+		if phase != '':
+			filters['event__phase'] = phase
+		profile = Profile.objects.get(user=request.user)
+		if profile.type == 'A':
+			videos = Video.objects.filter(**filters)
+		elif profile.type == 'B':
+			videos = Video.objects.filter(**filters, is_public=True, is_internal=True)
+	elif request.method == 'GET':
 		profile = Profile.objects.get(user=request.user)
 		if profile.type == 'A':
 			videos = Video.objects.all()
