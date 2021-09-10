@@ -62,7 +62,7 @@
 <h4>The transcript has been saved</h4>
         <br>
         <br>
-        <a href="/edit-transcript/{{ video.id }}"><button type="button" class="btn btn-success ">Continue editing</button></a>
+        <a href="{{ request.get_full_path }}"><button type="button" class="btn btn-success ">Continue editing</button></a>
         <a href="/video/{{ video.id }}"><button type="button" class="btn btn-success ">Go back to video</button></a>
     </div>
 </div>

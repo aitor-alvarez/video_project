@@ -549,12 +549,14 @@ def translate_vtt(request):
 				                         {'ContentType': 'text/vtt', 'language': 'en'})
 				os.remove('tmp/translation/' + filename)
 				os.remove('tmp/transcript/' + filename)
-				video.translation_created = 1
+				video.translation_created = True
 				video.save()
 				response = {
-					'msg': 'The translation was done correctly.'}
+					'msg': 'The translation was processed correctly.'}
+				return JsonResponse(response)
 
 		except:
 			response = {
 				'msg': 'The file was not translated correctly. Please try again.'}
+			return JsonResponse(response)
 
