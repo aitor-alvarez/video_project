@@ -28,7 +28,11 @@
                                     {% if video.is_public == False %}
                                     <p><i class="material-icons">link</i><a href="http://{{ request.get_host }}/video/{{ video.access_code }}/">Private url</a></p>
                                     {% endif %}
-                                    <p><h5>Duration: {{ video.duration }}</h5></p>
+                                    {% if video.transcript_created is True %}
+                                    <p><i class="material-icons">timer</i> {{ video.duration }}</p>
+                                    {% else %}
+                                    <p><a href="/generate/{{ video.id }}">Generate transcript</a></p>
+                                    {% endif %}
                                     <h5>Data consent <a href="/update_consent/{{ video.id }}">(Update Consent)</a></h5>
                                     {% if video.is_internal %}
                                     <span class="badge badge-pill badge-success">Internal</span>
@@ -42,8 +46,6 @@
                                     <span class="badge badge-pill badge-danger">Public</span>
                                 {% endif %}
                                 </div>
-
-
                         </div>
 
                     </div>

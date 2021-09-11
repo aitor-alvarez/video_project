@@ -49,6 +49,7 @@
         </div>
         <h5 id="area-text">Translation in progress...</h5>
         </div>
+<a id="back" href="/video/{{ video_object.id }}"><button type="button" class="btn btn-success ">Go back to video</button></a>
     {% endif %}
 {% endblock %}
 
@@ -63,6 +64,7 @@
      $('#transcript_trans').on('click', function (e) {
 
          e.preventDefault();
+         $('#back').hide();
          $('#main-display').hide(300)
          $('#progress').show(500)
          $('#area').attr('style','width: 30%');
@@ -79,11 +81,13 @@
             success: function (response) {
                 $('#area').attr('style','width: 100%');
                 $('#area-text').text(response['msg']);
+                $('#back').show(300)
             },
             error: function error(response) {
                 $('#area').attr('class','progress-bar progress-bar-striped bg-danger');
                 $('#area').attr('style','width: 100%');
                 $('#area-txt').text(response['msg']);
+                $('#back').show(300)
 
             }
         })

@@ -163,7 +163,7 @@ class VideoView(LoginRequiredMixin, CreateView):
 			video_form = form.save(commit=False)
 			pid = uuid.uuid4().hex
 			profile = Profile.objects.get(user=self.request.user)
-			program = Program.objects.get(students__in=[profile])
+			program = video_form.event.program
 			language = program.language.language_code
 			video_form.access_code = pid
 			video_form.owner = profile
@@ -547,10 +547,10 @@ def translate_vtt(request):
 				translate_vtt.save('tmp/translation/' + filename)
 				s3_upload_file_to_bucket('tmp/translation/' + filename, 'videos-techcenter', 'translations/' + filename,
 				                         {'ContentType': 'text/vtt', 'language': 'en'})
-				os.remove('tmp/translation/' + filename)
-				os.remove('tmp/transcript/' + filename)
 				video.translation_created = True
 				video.save()
+				os.remove('tmp/translation/' + filename)
+				os.remove('tmp/transcript/' + filename)
 				response = {
 					'msg': 'The translation was processed correctly.'}
 				return JsonResponse(response)
