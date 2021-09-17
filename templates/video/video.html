@@ -16,7 +16,7 @@
 <button id="transcript_trans" type="button" class="btn btn-success ">Translate</button>
     {% elif  not video_object.transcript_completed and not video_object.is_final %}
 <a href="/edit-transcript/{{ video_object.id }}"><button id="transcript_edit" type="button" class="btn btn-success ">Edit</button></a>
-    {% elif  video_object.translation_created %}
+    {% elif  video_object.translation_created and not video_object.is_final %}
 <a href="/edit-transcript/{{ video_object.id }}/en"><button id="translation_edit" type="button" class="btn btn-success ">Edit Translation</button></a>
     {% endif %}
 </div>
