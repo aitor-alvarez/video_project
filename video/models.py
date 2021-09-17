@@ -113,6 +113,9 @@ class Location(models.Model):
 class Country(models.Model):
 	name = models.CharField(max_length=255, blank=False)
 
+	class Meta:
+		verbose_name_plural = "Countries"
+
 	def __str__(self):
 		return self.name
 
