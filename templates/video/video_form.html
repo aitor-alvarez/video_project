@@ -4,6 +4,7 @@
 {% block content %}
 {% if request.user|is_user_in_program %}
 <div class="col-md-12">
+<div id="form_view">
 <h2>Upload Video</h2>
 <br>
 <br>
@@ -47,9 +48,24 @@
 <button type="submit">Save</button>
 </form>
 </div>
+ <div id="progress">
+        <h5 id="area-text">Video upload in progress...</h5>
+        </div>
+</div>
     {% else %}
     <div class="col-md-12">
           <h4>Your user is not associated with a program.</h4>
     </div>
     {% endif %}
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+  $("form").submit(function(){
+      $('#form_view').hide(300);
+      $('#progress').show(450);
+  });
+});
+</script>
 {% endblock %}

@@ -128,7 +128,7 @@ $('#enroll').on('click', function (e) {
                 $("#student_data").append(response['error']);
             }
             else {
-                alert(response['msg'])
+                $("#student_data").append(response['msg'])
 
             }
         },

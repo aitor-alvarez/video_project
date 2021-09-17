@@ -283,6 +283,8 @@ def enroll_user(request):
 			profile = Profile.objects.get(id=profile_id)
 			program = Program.objects.get(id=program_id)
 			program.students.add(profile)
+			program.save()
+			print(program.students.all())
 			response = {
 				'msg':'User added as student.' }
 			return JsonResponse(response)
