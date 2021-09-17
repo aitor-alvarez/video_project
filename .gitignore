@@ -21,4 +21,4 @@ static_files/admin/
 *.jpeg
 .DS_Store
 static/
-
+.aws/
