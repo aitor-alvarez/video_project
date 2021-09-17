@@ -5,6 +5,7 @@
 {% if request.user.id|get_profile_type == 'A' %}
    <h3>Add New User</h3>
     <br>
+<form action="." method="post">
 {% csrf_token %}
 {% for field in form %}
 {% if field.name == 'first_name' %}
