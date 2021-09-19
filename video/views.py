@@ -16,7 +16,6 @@ import botocore
 from io import StringIO
 import uuid
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
 
 
 
@@ -468,9 +467,9 @@ def save_transcript_s3(request):
 		#os.remove('./tmp/transcript/'+filename+'.vtt')
 		response = {
 				'msg': 'The file has been saved correctly'}
-	except:
+	except botocore.exceptions.ClientError as error:
 		response = {
-				'msg': 'The file was not saved correctly'}
+				'msg': error}
 	return JsonResponse(response)
 
 
