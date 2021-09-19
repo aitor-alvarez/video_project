@@ -461,7 +461,7 @@ def save_transcript_s3(request):
 	vtt, filename, lang = parse_vtt(request)
 	try:
 		vtt.save('./tmp/transcript/'+filename+'.vtt')
-		s3_upload_file_to_bucket('tmp/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
+		s3_upload_file_to_bucket('./tmp/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
 		os.remove('./tmp/transcript/'+filename+'.vtt')
@@ -481,7 +481,7 @@ def save_translation_s3(request):
 		s3_upload_file_to_bucket('tmp/translation/' + filename+'.vtt', 'videos-techcenter', 'translations/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
-		os.remove('./tmp/translation/'+filename+'.vtt')
+		os.remove('../tmp/translation/'+filename+'.vtt')
 		response = {
 				'msg': 'The file has been saved correctly'}
 	except:
