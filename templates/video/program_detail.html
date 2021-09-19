@@ -80,7 +80,7 @@ $( document ).ready(function() {
 
     $.ajax({
         type: "POST",
-        url: "/ajax/search_user/",
+        url: "{% url 'search_user' %}",
         data: {
             email: $("#email").val(),
             program_id: '{{ program.id }}',
@@ -114,7 +114,7 @@ $('#enroll').on('click', function (e) {
 
     $.ajax({
         type: "POST",
-        url: "/ajax/enroll_user/",
+        url: "{% url 'enroll_user' %}",
         data: {
            'profile_id' : '{{ profile.id }}',
             'program_id': '{{ program.id }}',

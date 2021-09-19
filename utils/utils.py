@@ -19,7 +19,6 @@ def process_speech_to_txt(path, lang):
 	audio = speech.RecognitionAudio(path)
 	config = speech.RecognitionConfig(
 		encoding=speech.RecognitionConfig.AudioEncoding.FLAC,
-		audio_channel_count = 2,
 		language_code=lang,
 		enable_word_time_offsets=True
 	)

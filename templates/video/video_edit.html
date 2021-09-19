@@ -78,11 +78,11 @@ $(document).ready(function() {
     var ind = $.inArray('en', params);
     if (ind >0){
         var lang = 'en';
-        var url = '/ajax/save_translation/';
+        var url = "{% url 'save_translation' %}";
     }
     else{
         var lang = '{{ video.language }}';
-        var url = '/ajax/save_transcript/';
+        var url = "{% url 'save_transcript' %}";
 
     }
     $('#show-response').hide();

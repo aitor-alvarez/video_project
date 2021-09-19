@@ -32,7 +32,7 @@ function generate_transcript(){
                    $('#area-text').attr('class', 'text-success"')
      $.ajax({
                 type : "POST",
-                url: "/ajax/transcribe/",
+                url: "{% url 'transcribe' %}",
                 data: {
                  video_id : '{{ video.id }}',
                  video_file : '{{ video.file }}',
@@ -73,7 +73,7 @@ function generate_transcript(){
 
         $.ajax({
                 type : "POST",
-                url: "/ajax/upload_video/",
+                url: "{% url 'upload_video' %}",
                 data: {
                  id : '{{ video.id }}',
                  csrfmiddlewaretoken: '{{ csrf_token }}',
