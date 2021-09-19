@@ -122,9 +122,10 @@ return data
         e.preventDefault();
 
        $.ajax({
+
             type: 'POST',
-            dataType: 'JSON',
             url: url,
+            dataType: 'JSON',
             headers:{
         "X-CSRFToken": csrftoken
     },
@@ -133,6 +134,7 @@ return data
             success: function (response) {
                 $('#show-transcript').hide();
                 $('#show-response').show(500);
+                console.log(response)
 
             },
             error: function error(response) {
