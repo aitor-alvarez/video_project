@@ -459,12 +459,13 @@ def edit_transcript(request, video_id, lang=None):
 
 def save_transcript_s3(request):
 	vtt, filename, lang = parse_vtt(request)
+	path = getattr(settings, "PATH", None)
 	try:
-		vtt.save('./tmp/transcript/'+filename+'.vtt')
-		s3_upload_file_to_bucket('./tmp/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
+		vtt.save(path+'tmp/transcript/'+filename+'.vtt')
+		s3_upload_file_to_bucket(path+'tmp/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
-		os.remove('./tmp/transcript/'+filename+'.vtt')
+		#os.remove('./tmp/transcript/'+filename+'.vtt')
 		response = {
 				'msg': 'The file has been saved correctly'}
 	except:
@@ -476,9 +477,10 @@ def save_transcript_s3(request):
 
 def save_translation_s3(request):
 	vtt, filename, lang = parse_vtt(request)
+	path = getattr(settings, "PATH", None)
 	try:
-		vtt.save('./tmp/translation/'+filename+'.vtt')
-		s3_upload_file_to_bucket('tmp/translation/' + filename+'.vtt', 'videos-techcenter', 'translations/' + filename+'.vtt',
+		vtt.save(path+'tmp/translation/'+filename+'.vtt')
+		s3_upload_file_to_bucket(path+'tmp/translation/' + filename+'.vtt', 'videos-techcenter', 'translations/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
 		os.remove('../tmp/translation/'+filename+'.vtt')
