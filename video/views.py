@@ -151,13 +151,14 @@ class VideoView(LoginRequiredMixin, CreateView):
 		success_url = '/'
 		fields = ['is_public', 'is_internal', 'file', 'type', 'event']
 
-		def get_initial(self, *args, **kwargs):
+		def get_initial(self):
+			self.initial = super(VideoView, self).get_initial()
 			profile = Profile.objects.get(user=self.request.user)
-			programs = Program.objects.filter(students__in=[profile.id])
+			programs = Program.objects.filter(students__in=[profile.id]).values_list('id', flat=True)
 			events = Event.objects.filter(program__in=programs)
-			initial = super(VideoView, self).get_initial(**kwargs)
-			initial['events'] = events
-			return initial
+			self.initial['events'] = events
+			print(self.initial)
+			return self.initial
 
 
 		def form_valid(self, form):
