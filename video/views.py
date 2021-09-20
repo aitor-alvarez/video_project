@@ -122,7 +122,7 @@ def archive_view(request):
 		elif profile.type == 'B':
 			videos = Video.objects.filter(**filters, is_public=True, is_internal=True)
 		elif profile.type == 'C':
-			HttpResponse("<h3>You are not authorized to access this page.</h3>")
+			return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 	elif request.method == 'GET':
 		profile = Profile.objects.get(user=request.user)
 		if profile.type == 'A':
@@ -130,7 +130,7 @@ def archive_view(request):
 		elif profile.type == 'B':
 			videos = Video.objects.filter(is_public=True, is_internal=True)
 		elif profile.type == 'C':
-			HttpResponse("<h3>You are not authorized to access this page.</h3>")
+			return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 
 	videos = [(v, get_s3_url('videos-techcenter', 'annotations/cultural/' + str(v.pid) + '.jpg')) for v in videos]
 	page = request.GET.get('page', 1)
@@ -152,10 +152,8 @@ class VideoView(LoginRequiredMixin, CreateView):
 		fields = ['is_public', 'is_internal', 'file', 'type', 'event']
 
 		def get_initial(self, *args, **kwargs):
-			profile = Profile.objects.filter(user=self.request.user)
-			profile = list(profile.values_list('id', flat=True))
-			programs = Program.objects.filter(students__in=profile)
-			programs = list(programs.values_list('id', flat=True))
+			profile = Profile.objects.get(user=self.request.user)
+			programs = Program.objects.filter(students__in=[profile.id])
 			events = Event.objects.filter(program__in=programs)
 			initial = super(VideoView, self).get_initial(**kwargs)
 			initial['events'] = events
