@@ -540,6 +540,7 @@ def update_consent(request, video_id):
 
 def translate_vtt(request):
 	if request.is_ajax():
+		path = getattr(settings, "PATH", None)
 		filename = request.POST.get('file')
 		lang = request.POST.get('lang')
 		video_id = request.POST.get('video_id')
@@ -551,13 +552,13 @@ def translate_vtt(request):
 		translate_vtt = generate_translation(file_content, lang)
 		try:
 			if translate_vtt is not None:
-				translate_vtt.save('./tmp/translation/' + filename)
-				s3_upload_file_to_bucket('tmp/translation/' + filename, 'videos-techcenter', 'translations/' + filename,
+				translate_vtt.save(path+'tmp/translation/' + filename)
+				s3_upload_file_to_bucket(path+'tmp/translation/' + filename, 'videos-techcenter', 'translations/' + filename,
 				                         {'ContentType': 'text/vtt', 'language': 'en'})
 				video.translation_created = True
 				video.save()
-				os.remove('./tmp/translation/' + filename)
-				os.remove('./tmp/transcript/' + filename)
+				os.remove(path+'tmp/translation/' + filename)
+				os.remove(path+'tmp/transcript/' + filename)
 				response = {
 					'msg': 'The translation was processed correctly.'}
 				return JsonResponse(response)
