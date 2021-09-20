@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from utils.utils import *
 from django.http import JsonResponse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
 import os
@@ -98,6 +98,7 @@ def my_videos(request):
 def archive_view(request):
 	form = FilterResultsForm()
 	videos = Video.objects.all()
+	profile = Profile.objects.get(user=request.user)
 	if request.method =='POST':
 		filters = {}
 		program = request.POST.get('program')
@@ -106,7 +107,7 @@ def archive_view(request):
 		type = request.POST.get('type')
 		location = request.POST.get('location')
 		phase = request.POST.get('phase')
-		if program != '' :
+		if program != '':
 			filters['event__program_id'] = program
 		if institution != '' :
 			filters['owner__institution_id'] = institution
@@ -116,17 +117,20 @@ def archive_view(request):
 			filters['event__city_id'] = location
 		if phase != '':
 			filters['event__phase'] = phase
-		profile = Profile.objects.get(user=request.user)
 		if profile.type == 'A':
 			videos = Video.objects.filter(**filters)
 		elif profile.type == 'B':
 			videos = Video.objects.filter(**filters, is_public=True, is_internal=True)
+		elif profile.type == 'C':
+			HttpResponse("<h3>You are not authorized to access this page.</h3>")
 	elif request.method == 'GET':
 		profile = Profile.objects.get(user=request.user)
 		if profile.type == 'A':
 			videos = Video.objects.all()
 		elif profile.type == 'B':
 			videos = Video.objects.filter(is_public=True, is_internal=True)
+		elif profile.type == 'C':
+			HttpResponse("<h3>You are not authorized to access this page.</h3>")
 
 	videos = [(v, get_s3_url('videos-techcenter', 'annotations/cultural/' + str(v.pid) + '.jpg')) for v in videos]
 	page = request.GET.get('page', 1)
