@@ -120,7 +120,7 @@ def archive_view(request):
 		if profile.type == 'A':
 			videos = Video.objects.filter(**filters)
 		elif profile.type == 'B':
-			videos = Video.objects.filter(**filters, is_public=True, is_internal=True)
+			videos = Video.objects.filter(**filters, is_internal=True)
 		elif profile.type == 'C':
 			return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 	elif request.method == 'GET':
@@ -128,7 +128,7 @@ def archive_view(request):
 		if profile.type == 'A':
 			videos = Video.objects.all()
 		elif profile.type == 'B':
-			videos = Video.objects.filter(is_public=True, is_internal=True)
+			videos = Video.objects.filter( is_internal=True)
 		elif profile.type == 'C':
 			return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 
