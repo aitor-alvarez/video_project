@@ -338,6 +338,7 @@ def upload_video_s3(request):
 
 @login_required
 def extract_audio_and_transcript(request):
+	path = getattr(settings, "PATH", None)
 	if request.is_ajax():
 		video_id = request.POST.get('video_id', None)
 		video_file = request.POST.get('video_file', None)
@@ -354,15 +355,15 @@ def extract_audio_and_transcript(request):
 				vtt_file = generate_vtt_caption(speech_txt_response, language)
 				if vtt_file is not None:
 					vtt_filename = access_code+'.vtt'
-					vtt_file.save('tmp/transcript/'+vtt_filename)
-					s3_upload_file_to_bucket('tmp/transcript/'+ vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
+					vtt_file.save(path+'tmp/transcript/'+vtt_filename)
+					s3_upload_file_to_bucket(path+'tmp/transcript/'+ vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
 					                         {'ContentType': 'text/vtt', 'pid': access_code,
 					                          'access_code': access_code, 'language': language})
 					video.transcript_created = True
 					video.save()
 					try:
-						thumb_file = 'tmp/thumbs/'+access_code+'.jpg'
-						thumb = generate_thumb('tmp/video/'+access_code+'.mp4', thumb_file, 480)
+						thumb_file = path+'tmp/thumbs/'+access_code+'.jpg'
+						thumb = generate_thumb(path+'tmp/video/'+access_code+'.mp4', thumb_file, 480)
 						s3_upload_file_to_bucket(thumb_file, 'videos-techcenter',
 						                         'thumbs/' +access_code+'.jpg',
 						                         {'ContentType': 'image/jpeg', 'pid': access_code,
@@ -374,7 +375,7 @@ def extract_audio_and_transcript(request):
 					try:
 						os.remove(video_file)
 						os.remove(audio_file)
-						#os.remove('tmp/transcript/'+vtt_filename)
+						os.remove(path+'tmp/transcript/'+vtt_filename)
 						blob.delete()
 						os.remove(thumb_file)
 					except:

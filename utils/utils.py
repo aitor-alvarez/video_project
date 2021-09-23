@@ -53,10 +53,11 @@ def upload_to_gcs(audio_file, bucket_name):
 
 
 def extract_audio_from_video(video_name):
+	path = getattr(settings, "PATH", None)
 	if video_name.endswith('.mp4'):
-		output_file = 'tmp/audio/'+video_name.replace('mp4', 'flac')
+		output_file = path+'tmp/audio/'+video_name.replace('mp4', 'flac')
 		try:
-			audio = AudioSegment.from_file('tmp/video/'+video_name)
+			audio = AudioSegment.from_file(path+'tmp/video/'+video_name)
 			audio.export(output_file, format='flac')
 			return output_file, datetime.timedelta(seconds=int(audio.duration_seconds))
 		except:
