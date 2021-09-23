@@ -52,7 +52,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Video(models.Model):
 	title = models.CharField(max_length=255, blank=True)
-	file = models.FileField( upload_to='./uploads/video/',blank=True, null=True)
+	file = models.FileField( upload_to='uploads/video/',blank=True, null=True)
 	description = models.TextField(blank=True)
 	language = models.CharField(max_length=255, blank=True)
 	url = models.URLField(blank=True)
