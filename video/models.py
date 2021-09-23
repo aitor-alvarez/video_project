@@ -4,6 +4,7 @@ from django.db.models.functions import Now
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 import datetime
+from django.conf import settings
 
 video_types = (
 	('I', 'Interview'),
@@ -28,6 +29,7 @@ program_choices = (
 	('S', 'Summer'),
 )
 
+path2 = getattr(settings, "PATH", None)
 
 class Profile(models.Model):
 	first_name = models.CharField(max_length=255, verbose_name="First Name")
@@ -50,7 +52,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Video(models.Model):
 	title = models.CharField(max_length=255, blank=True)
-	file = models.FileField( upload_to='tmp/video/',blank=True, null=True)
+	file = models.FileField( upload_to='./tmp/video/',blank=True, null=True)
 	description = models.TextField(blank=True)
 	language = models.CharField(max_length=255, blank=True)
 	url = models.URLField(blank=True)

@@ -322,11 +322,12 @@ def generate_video(request, video_id):
 
 @login_required
 def upload_video_s3(request):
+	path = getattr(settings, "PATH", None)
 	if request.is_ajax():
 		id = request.POST.get('id', None)
 		video = Video.objects.get(id=id)
 		try:
-			s3_upload_file_to_bucket(str(video.file), 'videos-techcenter', 'videos/' + str(video.access_code) + '.mp4',
+			s3_upload_file_to_bucket(path+str(video.file), 'videos-techcenter', 'videos/' + str(video.access_code) + '.mp4',
 		                         {'ContentType':'video/mp4','pid': str(video.pid), 'access_code': str(video.access_code), 'language': video.language})
 			response = {
 				'msg': 'The video is ready for audio segmentation.'}
@@ -473,7 +474,6 @@ def save_transcript_s3(request):
 		response = {
 				'msg': error}
 	return JsonResponse(response)
-
 
 
 def save_translation_s3(request):
