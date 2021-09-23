@@ -356,15 +356,15 @@ def extract_audio_and_transcript(request):
 				vtt_file = generate_vtt_caption(speech_txt_response, language)
 				if vtt_file is not None:
 					vtt_filename = access_code+'.vtt'
-					vtt_file.save(path+'tmp/transcript/'+vtt_filename)
-					s3_upload_file_to_bucket(path+'tmp/transcript/'+ vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
+					vtt_file.save(path+'uploads/transcript/'+vtt_filename)
+					s3_upload_file_to_bucket(path+'uploads/transcript/'+ vtt_filename, 'videos-techcenter', 'transcripts/' + vtt_filename,
 					                         {'ContentType': 'text/vtt', 'pid': access_code,
 					                          'access_code': access_code, 'language': language})
 					video.transcript_created = True
 					video.save()
 					try:
-						thumb_file = path+'tmp/thumbs/'+access_code+'.jpg'
-						thumb = generate_thumb(path+'tmp/video/'+access_code+'.mp4', thumb_file, 480)
+						thumb_file = path+'uploads/thumbs/'+access_code+'.jpg'
+						thumb = generate_thumb(path+'uploads/video/'+access_code+'.mp4', thumb_file, 480)
 						s3_upload_file_to_bucket(thumb_file, 'videos-techcenter',
 						                         'thumbs/' +access_code+'.jpg',
 						                         {'ContentType': 'image/jpeg', 'pid': access_code,
@@ -376,7 +376,7 @@ def extract_audio_and_transcript(request):
 					try:
 						os.remove(video_file)
 						os.remove(audio_file)
-						os.remove(path+'tmp/transcript/'+vtt_filename)
+						os.remove(path+'uploads/transcript/'+vtt_filename)
 						blob.delete()
 						os.remove(thumb_file)
 					except:
@@ -463,11 +463,11 @@ def save_transcript_s3(request):
 	vtt, filename, lang = parse_vtt(request)
 	path = getattr(settings, "PATH", None)
 	try:
-		vtt.save(path+'tmp/transcript/'+filename+'.vtt')
-		s3_upload_file_to_bucket(path+'tmp/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
+		vtt.save(path+'uploads/transcript/'+filename+'.vtt')
+		s3_upload_file_to_bucket(path+'uploads/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
-		#os.remove('./tmp/transcript/'+filename+'.vtt')
+		#os.remove('./uploads/transcript/'+filename+'.vtt')
 		response = {
 				'msg': 'The file has been saved correctly'}
 	except botocore.exceptions.ClientError as error:
@@ -480,11 +480,11 @@ def save_translation_s3(request):
 	vtt, filename, lang = parse_vtt(request)
 	path = getattr(settings, "PATH", None)
 	try:
-		vtt.save(path+'tmp/translation/'+filename+'.vtt')
-		s3_upload_file_to_bucket(path+'tmp/translation/' + filename+'.vtt', 'videos-techcenter', 'translations/' + filename+'.vtt',
+		vtt.save(path+'uploads/translation/'+filename+'.vtt')
+		s3_upload_file_to_bucket(path+'uploads/translation/' + filename+'.vtt', 'videos-techcenter', 'translations/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
-		os.remove('../tmp/translation/'+filename+'.vtt')
+		os.remove('../uploads/translation/'+filename+'.vtt')
 		response = {
 				'msg': 'The file has been saved correctly'}
 	except:
@@ -551,13 +551,13 @@ def translate_vtt(request):
 		translate_vtt = generate_translation(file_content, lang)
 		try:
 			if translate_vtt is not None:
-				translate_vtt.save(path+'tmp/translation/' + filename)
-				s3_upload_file_to_bucket(path+'tmp/translation/' + filename, 'videos-techcenter', 'translations/' + filename,
+				translate_vtt.save(path+'uploads/translation/' + filename)
+				s3_upload_file_to_bucket(path+'uploads/translation/' + filename, 'videos-techcenter', 'translations/' + filename,
 				                         {'ContentType': 'text/vtt', 'language': 'en'})
 				video.translation_created = True
 				video.save()
-				os.remove(path+'tmp/translation/' + filename)
-				os.remove(path+'tmp/transcript/' + filename)
+				os.remove(path+'uploads/translation/' + filename)
+				os.remove(path+'uploads/transcript/' + filename)
 				response = {
 					'msg': 'The translation was processed correctly.'}
 				return JsonResponse(response)
