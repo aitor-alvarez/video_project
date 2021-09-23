@@ -157,7 +157,6 @@ class VideoView(LoginRequiredMixin, CreateView):
 			programs = Program.objects.filter(students__in=[profile.id]).values_list('id', flat=True)
 			events = Event.objects.filter(program__in=programs)
 			self.initial['events'] = events
-			print(self.initial)
 			return self.initial
 
 
@@ -286,7 +285,6 @@ def enroll_user(request):
 			program = Program.objects.get(id=program_id)
 			program.students.add(profile)
 			program.save()
-			print(program.students.all())
 			response = {
 				'msg':'User added as student.' }
 			return JsonResponse(response)
@@ -376,7 +374,7 @@ def extract_audio_and_transcript(request):
 					try:
 						os.remove(video_file)
 						os.remove(audio_file)
-						os.remove('tmp/transcript/'+vtt_filename)
+						#os.remove('tmp/transcript/'+vtt_filename)
 						blob.delete()
 						os.remove(thumb_file)
 					except:

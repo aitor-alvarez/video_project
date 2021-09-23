@@ -127,7 +127,7 @@ def generate_vtt_caption(speech_txt_response, lang, bin=7):
 			index += 1
 		except IndexError:
 			pass
-		return vtt
+	return vtt
 
 
 def s3_upload_file_to_bucket(file, bucket, Key, metadata):
