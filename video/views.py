@@ -351,7 +351,7 @@ def extract_audio_and_transcript(request):
 		video.duration = duration
 		video.save()
 		if audio_file is not None:
-			file_url, blob = upload_to_gcs(audio_file_name, 'flagship-videos')
+			file_url, blob = upload_to_gcs(audio_file, audio_file_name, 'flagship-videos')
 			speech_txt_response = process_speech_to_txt(file_url, language)
 			if speech_txt_response:
 				vtt_file = generate_vtt_caption(speech_txt_response, language)

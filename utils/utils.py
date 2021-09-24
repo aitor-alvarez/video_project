@@ -28,14 +28,14 @@ def process_speech_to_txt(path, lang):
 
 
 #Upload file to gcs
-def upload_to_gcs(audio_file, bucket_name):
+def upload_to_gcs(full_file_path, audio_file, bucket_name):
 	storage_client = storage.Client()
 	url = dict(uri='gs://' + bucket_name + '/' + audio_file)
 	if storage_client.bucket(bucket_name):
 		bucket = storage_client.bucket(bucket_name)
 		blob = bucket.blob(audio_file)
 		try:
-			blob.upload_from_filename(audio_file)
+			blob.upload_from_filename(full_file_path)
 			return url, blob
 		except:
 			return "File was not uploaded. There seems to be a problem with your file."
@@ -45,7 +45,7 @@ def upload_to_gcs(audio_file, bucket_name):
 		bucket = storage_client.bucket(bucket_name)
 		blob = bucket.blob(audio_file)
 		try:
-			blob.upload_from_filename(audio_file)
+			blob.upload_from_filename(full_file_path)
 			return url, blob
 		except:
 			return "File was not uploaded. There seems to be a problem with your file."
