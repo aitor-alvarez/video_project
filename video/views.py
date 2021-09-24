@@ -346,11 +346,12 @@ def extract_audio_and_transcript(request):
 		language = request.POST.get('language', None)
 		access_code = request.POST.get('access_code', None)
 		audio_file, duration = extract_audio_from_video(video_file.split('/')[-1])
+		audio_file_name = audio_file.split('/')[-1]
 		video = Video.objects.get(id=video_id)
 		video.duration = duration
 		video.save()
 		if audio_file is not None:
-			file_url, blob = upload_to_gcs(audio_file.split('/')[-1], 'flagship-videos')
+			file_url, blob = upload_to_gcs(audio_file_name, 'flagship-videos')
 			speech_txt_response = process_speech_to_txt(file_url, language)
 			if speech_txt_response:
 				vtt_file = generate_vtt_caption(speech_txt_response, language)
