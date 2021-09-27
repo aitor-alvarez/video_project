@@ -33,7 +33,7 @@
             {% endif %}
          <div class="able-transcript">
         <div class="able-transcript-container">
-        {% if  video.language|slice:":2" == 'ar' or  video.language|slice:":2" == 'fa' %}
+        {% if  video.event.program.language.language_code|slice:":2" == 'ar' or  video.event.program.language.language_code|slice:":2" == 'fa' %}
         {% for out in output %}
          <button type="button" class="btn btn-success" data-start="{{ out.start }}">Clip ({{ out.start }}--{{ out.end }})</button>
         <textarea class="form-control" dir="rtl" data-start="{{ out.start }}" data-end="{{ out.end }}" rows="2">{{ out.text }}</textarea>

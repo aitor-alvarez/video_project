@@ -400,6 +400,7 @@ def extract_audio_and_transcript(request):
 
 def show_video(request, video_id):
 	video = Video.objects.get(id=video_id)
+	s3 = boto3.resource('s3')
 	if video.is_public or video.owner.user == request.user:
 		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
 		if video.transcript_created == True:
@@ -407,10 +408,12 @@ def show_video(request, video_id):
 
 		else:
 			transcript_url=None
-		if video.translation_created == True:
-			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid)+'.vtt')
-		else:
-			translation_url=None
+		try:
+			s3.Object('videos-techcenter', 'translations/' + str(video.pid) + '.vtt').load()
+			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
+		except botocore.exceptions.ClientError as e:
+			if e.response['Error']['Code'] == "404":
+				translation_url = False
 
 		return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
 		                                            :translation_url, 'video_object': video})
