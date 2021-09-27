@@ -438,12 +438,12 @@ def edit_transcript(request, video_id, lang=None):
 	video = Video.objects.get(id=video_id)
 	s3_client = boto3.client('s3')
 	if lang == None:
-		s3_response_object = s3_client.get_object(Bucket='videos-techcenter', Key='transcripts/' + video.access_code+'.vtt')
+		s3_response_object = s3_client.get_object(Bucket='videos-techcenter', Key='transcripts/' + video.pid+'.vtt')
 		file_content = s3_response_object['Body'].read()
 		transcript_file = webvtt.read_buffer(StringIO(file_content.decode()))
 	elif lang == 'en':
 		s3_response_object = s3_client.get_object(Bucket='videos-techcenter',
-		                                          Key='translations/' + video.access_code + '.vtt')
+		                                          Key='translations/' + video.pid + '.vtt')
 		file_content = s3_response_object['Body'].read()
 		transcript_file = webvtt.read_buffer(StringIO(file_content.decode()))
 
