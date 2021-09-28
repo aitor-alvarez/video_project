@@ -76,7 +76,7 @@
             headers:{
         "X-CSRFToken": csrftoken
     },
-            data: {'file': '{{ video_object.access_code }}.vtt', 'lang':'{{ video_object.language }}',
+            data: {'file': '{{ video_object.access_code }}.vtt', 'lang':'{{ video_object.event.program.language.language_code }}',
             'video_id': '{{ video_object.id }}'},
             success: function (response) {
                 $('#area').attr('style','width: 100%');
