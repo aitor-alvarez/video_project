@@ -132,7 +132,7 @@ def archive_view(request):
 		elif profile.type == 'C':
 			return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 
-	videos = [(v, get_s3_url('videos-techcenter', 'annotations/cultural/' + str(v.pid) + '.jpg')) for v in videos]
+	videos = [(v, get_s3_url('videos-techcenter', 'thumbs/' + str(v.pid) + '.jpg')) for v in videos]
 	page = request.GET.get('page', 1)
 	paginator = Paginator(videos, 20)
 
