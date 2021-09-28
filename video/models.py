@@ -63,7 +63,7 @@ class Video(models.Model):
 	is_showcase = models.BooleanField(default=0)
 	is_public = models.BooleanField(default=0)
 	is_internal = models.BooleanField(default=0)
-	owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
+	owner = models.ForeignKey(User, on_delete=models.CASCADE)
 	event = models.ForeignKey('Event', on_delete=models.CASCADE)
 	duration = models.DurationField(null=True, blank=True)
 	transcript_created = models.BooleanField(default=0)
