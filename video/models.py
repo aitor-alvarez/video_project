@@ -74,7 +74,7 @@ class Video(models.Model):
 	created = models.DateTimeField(default=datetime.datetime.now())
 
 	def __str__(self):
-		return self.title
+		return self.owner.first_name+" "+self.owner.last_name
 
 
 class Program(models.Model):
