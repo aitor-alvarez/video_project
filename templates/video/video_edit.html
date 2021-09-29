@@ -91,7 +91,7 @@ $(document).ready(function() {
 
     $('.btn-success').on('click', function () {
         var clip = $(this)[0].dataset.start.split(':');
-        var seconds = parseInt(clip[1].substr(0, 2)) + parseInt(clip[2].substr(0, 2));
+        var seconds = parseInt(clip[1].substr(0, 2))*60 + parseInt(clip[2].substr(0, 2));
         setCurTime(seconds);
 })
 
