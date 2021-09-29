@@ -22,7 +22,7 @@
             of my program participation (name of program, year, home institution, host institution and host country)
             as well as a brief description of the topic of my presentation will be attached to this video. </p>
         <label for="id_is_public"><strong>I grant permission to post this video on the internal website for the Flagship community:</strong></label>
-        <input type="checkbox" name="is_public" value="0" id="id_is_public">
+        <input type="checkbox" name="is_public" value="0" id="id_is_internal">
         <br>
         <hr>
          {% elif field.name == 'is_internal' %}
@@ -34,7 +34,7 @@
             I understand that my name and a brief description of my program participation (name of program, year, home institution,
             host institution and host country) as well as a brief description of the topic of my presentation will be attached to this video. </p>
         <label for="id_is_internal"><strong> I grant permission to post this video on the public website for the Flagship community:</strong></label>
-        <input type="checkbox" name="is_internal" value="0" id="id_is_internal">
+        <input type="checkbox" name="is_internal" value="0" id="id_is_public">
         <br>
         <hr>
     {% else %}
