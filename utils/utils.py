@@ -20,7 +20,8 @@ def process_speech_to_txt(path, lang):
 	config = speech.RecognitionConfig(
 		encoding=speech.RecognitionConfig.AudioEncoding.FLAC,
 		language_code=lang,
-		enable_word_time_offsets=True
+		enable_word_time_offsets=True,
+		audio_channel_count=2,
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
 	response = operation.result(timeout=960)
