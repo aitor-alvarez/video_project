@@ -167,7 +167,7 @@ class VideoView(LoginRequiredMixin, CreateView):
 			program = video_form.event.program
 			language = program.language.language_code
 			video_form.access_code = pid
-			video_form.owner = profile
+			video_form.owner = self.request.user
 			video_form.language = language
 			video_form.pid = pid
 			video_form.title = profile.first_name+' '+profile.last_name
@@ -401,7 +401,7 @@ def extract_audio_and_transcript(request):
 def show_video(request, video_id):
 	video = Video.objects.get(id=video_id)
 	s3 = boto3.resource('s3')
-	if video.is_public or video.owner.user == request.user:
+	if video.is_public or video.owner == request.user:
 		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
 		if video.transcript_created == True:
 			try:
