@@ -90,7 +90,7 @@ def showcase_videos(request, video_id=None):
 
 @login_required
 def my_videos(request):
-	videos = Video.objects.filter(owner__user=request.user)
+	videos = Video.objects.filter(owner=request.user)
 	return render(request, 'video/my_videos.html', {'my_videos':  videos})
 
 
