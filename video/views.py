@@ -154,7 +154,7 @@ class VideoView(LoginRequiredMixin, CreateView):
 		def get_initial(self):
 			self.initial = super(VideoView, self).get_initial()
 			profile = Profile.objects.get(user=self.request.user)
-			programs = Program.objects.filter(students__in=[profile.id]).values_list('id', flat=True)
+			programs = Program.objects.filter(students__in=[self.request.user]).values_list('id', flat=True)
 			events = Event.objects.filter(program__in=programs)
 			self.initial['events'] = events
 			return self.initial
@@ -263,7 +263,7 @@ def search_user(request):
 		program_id = request.POST.get('program_id', None)
 		try:
 			profile = Profile.objects.get(user__email =email)
-			if not Program.objects.filter(id=program_id, students__in=[profile]).exists():
+			if not Program.objects.filter(id=program_id, students__in=[profile.user]).exists():
 				response = {
 					'first_name': profile.first_name, 'last_name': profile.last_name, 'email': email, 'profile_id': profile.id }
 				return JsonResponse(response)
@@ -283,7 +283,7 @@ def enroll_user(request):
 		try:
 			profile = Profile.objects.get(id=profile_id)
 			program = Program.objects.get(id=program_id)
-			program.students.add(profile)
+			program.students.add(profile.user)
 			program.save()
 			response = {
 				'msg':'User added as student.' }
@@ -296,7 +296,7 @@ def enroll_user(request):
 @login_required
 def program_detail(request, program_id):
 	profile = Profile.objects.get(user=request.user)
-	if profile.type == 'A' or 'B':
+	if profile.type == 'A' or profile.type == 'B':
 		program = Program.objects.get(id=program_id)
 		return render(request, 'video/program_detail.html', {'program': program, 'profile': profile})
 	else:
@@ -309,7 +309,7 @@ def generate_video(request, video_id):
 	if video.is_final or video.transcript_created:
 		return HttpResponseRedirect('/my-videos/')
 	else:
-		if request.user == video.owner.user:
+		if request.user == video.owner:
 			if video.is_final == False:
 				return render(request, 'video/generate_video.html', {'video': video})
 			else:
