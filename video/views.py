@@ -374,6 +374,10 @@ def extract_audio_and_transcript(request):
 						video.save()
 					except:
 						print("no thumb")
+						os.remove(video_file)
+						os.remove(audio_file)
+						os.remove(path + 'uploads/transcript/' + vtt_filename)
+						blob.delete()
 					try:
 						os.remove(video_file)
 						os.remove(audio_file)
@@ -485,7 +489,7 @@ def save_transcript_s3(request):
 		s3_upload_file_to_bucket(path+'uploads/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
-		#os.remove('./uploads/transcript/'+filename+'.vtt')
+		os.remove('./uploads/transcript/'+filename+'.vtt')
 		response = {
 				'msg': 'The file has been saved correctly'}
 	except botocore.exceptions.ClientError as error:
