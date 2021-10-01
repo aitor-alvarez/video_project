@@ -94,17 +94,10 @@
           {% if videos.has_other_pages %}
   <ul class="pagination pagination-primary">
     {% if videos.has_previous %}
-        <a href="?page={{ videos.previous_page_number }}" class="page-link"><button>PREVIOUS</button></a>
+        <a href="?page={{ videos.previous_page_number }}" class="page-link"><button>Previous Page</button></a>
     {% endif %}
-    {% for i in videos.paginator.page_range %}
-      {% if users.number == i %}
-        <li class="page-item"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-      {% else %}
-        <li class="page-item"><a href="?page={{ i }}">{{ i }}</a></li>
-      {% endif %}
-    {% endfor %}
     {% if videos.has_next %}
-        <a href="?page={{ videos.next_page_number }}" class="page-link"><button>PREVIOUS</button></a>
+        <a href="?page={{ videos.next_page_number }}" class="page-link"><button>Next Page</button></a>
     {% endif %}
   </ul>
 {% endif %}
