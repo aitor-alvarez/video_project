@@ -16,7 +16,10 @@ import botocore
 from io import StringIO
 import uuid
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+import datetime
+from functools import reduce
+import operator
+from django.db.models import Q
 
 
 def home(request):
@@ -103,24 +106,29 @@ def archive_view(request):
 		filters = {}
 		program = request.POST.get('program')
 		institution = request.POST.get('institution')
-		year = request.POST.get('year')
+		year = request.POST.getlist('year')
 		type = request.POST.get('type')
 		location = request.POST.get('location')
 		phase = request.POST.get('phase')
 		if program != '':
-			filters['event__program_id'] = program
+			filters['event__program__language_id__in'] = program
 		if institution != '' :
 			filters['owner__institution_id'] = institution
 		if type != '' :
 			filters['type'] = type
+		if year !='':
+			query = reduce(operator.or_, (Q(event__program__start__gte=datetime.date(year=int(y), month=1, day=1 )) & Q(event__program__end__lte=datetime.date(year=int(y), month=12, day=31 )) for y in year) )
+
+
 		if location != '':
 			filters['event__city_id'] = location
 		if phase != '':
 			filters['event__phase'] = phase
+
 		if profile.type == 'A':
-			videos = Video.objects.filter(**filters)
+			videos = Video.objects.filter(query).filter(**filters)
 		elif profile.type == 'B':
-			videos = Video.objects.filter(**filters, is_internal=True)
+			videos = Video.objects.filter(query).filter(**filters, is_internal=True)
 		elif profile.type == 'C':
 			return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 	elif request.method == 'GET':

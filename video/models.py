@@ -90,7 +90,7 @@ class Program(models.Model):
 		return events
 
 	def __str__(self):
-		return self.name
+		return self.language.language+" Flagship Program"
 
 
 class Event(models.Model):

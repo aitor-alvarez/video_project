@@ -54,27 +54,33 @@ class FilterResultsForm(forms.Form):
 	years =(('', '--------'), ('2017', 2017), ('2018', 2018), ('2019',2019), ('2020', 2020), ('2021', 2021), ('2022', 2022), ('2023', 2023), ('2024',2024))
 	program = forms.ModelChoiceField(
 				widget=forms.Select,
-        queryset= Program.objects.all(), required=False)
+        queryset= Language.objects.all(), required=False)
+
 	institution = forms.ModelChoiceField(
 				widget=forms.Select,
         queryset= Institution.objects.all(), required=False
 	)
+
 	year = forms.ChoiceField(
-				widget=forms.Select,
+				widget=forms.SelectMultiple,
         choices= years, required=False
 	)
+
 	type = forms.ChoiceField(
 				widget=forms.Select,
         choices= (('', '-------'),)+video_types, required=False
 	)
+
 	location = forms.ModelChoiceField(
 				widget=forms.Select,
         queryset= Location.objects.all(), required=False
 	)
+
 	phase = forms.ChoiceField(
 				widget=forms.Select,
         choices= (('', '-------'),)+phases, required=False
 	                          )
+
 	def __init__(self, *args, **kwargs):
 		super(FilterResultsForm, self).__init__(*args, **kwargs)
 		for name in self.fields.keys():

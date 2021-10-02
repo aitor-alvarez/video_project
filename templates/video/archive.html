@@ -8,18 +8,21 @@
           <br>
           <div class="row">
            <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Filters
-  </a>
-          <br>
-          <br>
+                Filters
+            </a>
+
           </div>
           <div class="row">
             <div class="collapse" id="collapseExample">
               <article class="card-group-item">
+              <br>
+                  <br>
                   <form id="filter_results" action="." method="POST">
                       {% csrf_token %}
                   <div class="row">
                         {% for field in form %}
+                            <br>
+
                         {% if field.name == 'program' or field.name == 'institution' %}
                             <div class="col-md-4">
                                 <label>{{ field.name }}</label>
@@ -27,6 +30,7 @@
                             </div>
                             {% endif %}
                             <br>
+
                          {% if field.name == 'year' or field.name == 'type' %}
                             <div class="col-sm-4">
                                 <label>{{ field.name }}</label>
@@ -104,6 +108,5 @@
 </div>
           </div>
 </div>
-    </div>
 
 {% endblock %}
