@@ -84,6 +84,11 @@ class FilterResultsForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		super(FilterResultsForm, self).__init__(*args, **kwargs)
 		for name in self.fields.keys():
-			self.fields[name].widget.attrs.update({
+			if name == 'year':
+				self.fields[name].widget.attrs.update({
+					'class': 'selectpicker',
+				})
+			else:
+				self.fields[name].widget.attrs.update({
 				'class': 'form-control',
 			})
