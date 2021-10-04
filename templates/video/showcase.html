@@ -41,15 +41,11 @@
       {% if translation_url %}
             <track kind="subtitles" src="{{ translation_url }}" srclang="en" label="English"/>
     {% endif %}
-   {% if description_cultural_url %}
-            <track kind="descriptions" src="{{ description_cultural_url }}"/>
-    {% endif %}
+
   {% if description_professional_url %}
-            <track kind="descriptions" src="{{ description_professional_url }}" />
+            <track id="descriptionTrack" kind="descriptions" src="{{ description_professional_url }}" />
     {% endif %}
-  {% if description_linguistic_url %}
-            <track kind="descriptions" src="{{ description_linguistic_url }}" />
-    {% endif %}
+
   </video>
 </div>
 
