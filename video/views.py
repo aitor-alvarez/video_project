@@ -40,7 +40,7 @@ def manage_programs(request):
 		events = Event.objects.all()
 		users = Profile.objects.filter(type__in=['A', 'B'])
 	elif profile.type == 'B':
-		programs = Program.objects.filter(language=profile.language)
+		programs = Program.objects.filter(id=profile.program_id)
 		events = Event.objects.filter(program__in=programs)
 	return render(request, 'video/manage.html', {'programs': programs, 'events': events, 'users': users})
 
