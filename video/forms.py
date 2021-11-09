@@ -52,9 +52,12 @@ class UserForm(ModelForm):
 
 class FilterResultsForm(forms.Form):
 	years =(('', '--------'), ('2018', 2018), ('2019',2019), ('2020', 2020), ('2021', 2021), ('2022', 2022), ('2023', 2023), ('2024',2024))
+
+
 	program = forms.ModelChoiceField(
-				widget=forms.Select,
-        queryset= Language.objects.all(), required=False)
+				widget=forms.SelectMultiple,
+        queryset=Language.objects.all(), required=False)
+
 
 	institution = forms.ModelChoiceField(
 				widget=forms.Select,
@@ -84,7 +87,7 @@ class FilterResultsForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		super(FilterResultsForm, self).__init__(*args, **kwargs)
 		for name in self.fields.keys():
-			if name == 'year':
+			if name == 'year' or name == 'program':
 				self.fields[name].widget.attrs.update({
 					'class': 'selectpicker',
 				})

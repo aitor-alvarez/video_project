@@ -104,7 +104,7 @@ def archive_view(request):
 	profile = Profile.objects.get(user=request.user)
 	if request.method =='POST':
 		filters = {}
-		program = request.POST.get('program')
+		program = request.POST.getlist('program')
 		institution = request.POST.get('institution')
 		year = request.POST.getlist('year')
 		type = request.POST.get('type')
@@ -117,7 +117,6 @@ def archive_view(request):
 		if type != '' :
 			filters['type'] = type
 		if year !=[]:
-			print(year)
 			query = reduce(operator.or_, (Q(event__program__start__gte=datetime.date(year=int(y), month=1, day=1 )) & Q(event__program__end__lte=datetime.date(year=int(y), month=12, day=31 )) for y in year) )
 		else:
 			query = reduce(operator.or_, (Q(event__program__start__gte=datetime.date(year=int(y), month=1, day=1 ))
