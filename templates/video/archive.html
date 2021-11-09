@@ -23,23 +23,54 @@
                         {% for field in form %}
                             <br>
 
-                        {% if field.name == 'program' or field.name == 'institution' %}
+                        {% if field.name == 'program'  %}
                             <div class="col-md-4">
+                            <span data-toggle="tooltip" data-placement="top" title="Overseas program" class="material-icons">help</span>
                                 <label>{{ field.name }}</label>
                                 {{ field }}
                             </div>
                             {% endif %}
                             <br>
 
-                         {% if field.name == 'year' or field.name == 'type' %}
-                            <div class="col-sm-4">
+                         {% if field.name == 'institution' %}
+                            <div class="col-md-4">
+                            <span data-toggle="tooltip" data-placement="top" title="Institution that manages the program" class="material-icons">help</span>
                                 <label>{{ field.name }}</label>
                                 {{ field }}
                             </div>
                             {% endif %}
                             <br>
-                         {% if field.name == 'location' or field.name == 'phase' %}
+
+
+                         {% if field.name == 'year'%}
+
                             <div class="col-sm-4">
+                            <span data-toggle="tooltip" data-placement="top" title="Program's year" class="material-icons">help</span>
+                                <label>{{ field.name }}</label>
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                        {% if field.name == 'type' %}
+
+                             <div class="col-sm-4">
+                                <span data-toggle="tooltip" data-placement="top" title="Type of video" class="material-icons">help</span>
+
+                                <label>{{ field.name }}</label>
+                                {{ field }}
+                            </div>
+                             {% endif %}
+                            <br>
+                         {% if field.name == 'location' %}
+                            <div class="col-sm-4">
+                            <span data-toggle="tooltip" data-placement="top" title="Location where the overseas program takes place" class="material-icons">help</span>
+                                <label>{{ field.name }}</label>
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                            <br>
+                            {% if field.name == 'phase' %}
+                            <div class="col-sm-4">
+                            <span data-toggle="tooltip" data-placement="top" title="Program's phase (Mid and Final)" class="material-icons">help</span>
                                 <label>{{ field.name }}</label>
                                 {{ field }}
                             </div>
