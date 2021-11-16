@@ -111,7 +111,7 @@ def archive_view(request):
 		location = request.POST.get('location')
 		phase = request.POST.get('phase')
 		if program != '':
-			filters['event__program__language_id__in'] = program
+			filters['event__program__language_id__in'] = [p for p in program]
 		if institution != '' :
 			filters['owner__institution_id'] = institution
 		if type != '' :
@@ -384,14 +384,10 @@ def extract_audio_and_transcript(request):
 						video.save()
 					except:
 						print("no thumb")
-						os.remove(video_file)
-						os.remove(audio_file)
-						os.remove(path + 'uploads/transcript/' + vtt_filename)
-						blob.delete()
 					try:
-						os.remove(video_file)
-						os.remove(audio_file)
-						os.remove(path+'uploads/transcript/'+vtt_filename)
+						os.remove(path + path + 'uploads/video/' + access_code + '.mp4')
+						os.remove(path + path + 'uploads/audio/' + access_code + '.flac')
+						os.remove(path + 'uploads/transcript/' + vtt_filename)
 						blob.delete()
 						os.remove(thumb_file)
 					except:
