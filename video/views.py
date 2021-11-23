@@ -110,7 +110,7 @@ def archive_view(request):
 		type = request.POST.get('type')
 		location = request.POST.get('location')
 		phase = request.POST.get('phase')
-		if program != '':
+		if program !=[]:
 			filters['event__program__language_id__in'] = [p for p in program]
 		if institution != '' :
 			filters['owner__institution_id'] = institution
@@ -138,7 +138,7 @@ def archive_view(request):
 		if profile.type == 'A':
 			videos = Video.objects.all()
 		elif profile.type == 'B':
-			videos = Video.objects.filter( is_internal=True)
+			videos = Video.objects.filter(is_internal=True)
 		elif profile.type == 'C':
 			return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 
