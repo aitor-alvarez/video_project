@@ -33,7 +33,7 @@
 <div class="row">
 <div class="col-md-5 ">
 
-  <video id="video1" preload="auto" width="480" height="480" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="false" data-transcript-div="transcript" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
+  <video id="video1" preload="auto" width="480" height="480" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="false" data-transcript-div="transcript" data-descriptions-audible="false" data-use-descriptions-button="false" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
     <source type="video/mp4" src="{{ video_url }}" />
 
 
@@ -42,7 +42,7 @@
             <track kind="subtitles" src="{{ translation_url }}" srclang="en" label="English"/>
     {% endif %}
    {% if descriptions_url %}
-            <track id="descriptionTrack" kind="descriptions" src="{{ descriptions_url}}"/>
+            <track class="able-unspoken" id="descriptionTrack" kind="descriptions" src="{{ descriptions_url}}"/>
     {% endif %}
   </video>
 </div>
