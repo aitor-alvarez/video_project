@@ -161,7 +161,7 @@ class VideoView(LoginRequiredMixin, CreateView):
 			program = video_form.event.program
 			language = program.language.language_code
 			video_form.access_code = pid
-			video_form.owner = self.request.user
+			video_form.owner = profile
 			video_form.language = language
 			video_form.pid = pid
 			video_form.title = profile.first_name+' '+profile.last_name
