@@ -370,11 +370,11 @@ def extract_audio_and_transcript(request):
 					except:
 						print("no thumb")
 					try:
-						os.remove(path + path + 'uploads/video/' + access_code + '.mp4')
-						os.remove(path + path + 'uploads/audio/' + access_code + '.flac')
-						os.remove(path + 'uploads/transcript/' + vtt_filename)
 						blob.delete()
 						os.remove(thumb_file)
+						os.remove(path + video.file)
+						os.remove(path + 'uploads/audio/' + audio_file_name)
+						os.remove(path + 'uploads/transcript/' + vtt_filename)
 					except:
 						None
 					response = {
