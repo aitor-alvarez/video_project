@@ -300,10 +300,11 @@ def program_detail(request, program_id):
 @login_required
 def generate_video(request, video_id):
 	video = Video.objects.get(id=video_id)
+	profile = Profile.objects.get(user=request.user)
 	if video.is_final or video.transcript_created:
 		return HttpResponseRedirect('/my-videos/')
 	else:
-		if request.user == video.owner:
+		if profile == video.owner:
 			if video.is_final == False:
 				return render(request, 'video/generate_video.html', {'video': video})
 			else:
