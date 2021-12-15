@@ -42,15 +42,8 @@
   </tbody>
 </table>
 
-<button id="add_student" type="button" class="btn btn-success ">Add student to the program</button>
-<div id="student-form">
-    <h4>Search a user by email:</h4>
-    <form id="registration" action="." method="POST">
-        {% csrf_token %}
-        <input type="text" id="email" required>
-        <input type="submit">
-    </form>
-</div>
+<a href="/new/student/{{ program.id }}/"><button id="add_student" type="button" class="btn btn-success ">Add student to the program</button></a>
+
 <div id="student_data">
 <p id="student_name"></p>
 <p id="student_last_name"></p>
