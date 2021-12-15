@@ -20,7 +20,7 @@ import datetime
 from functools import reduce
 import operator
 from django.db.models import Q
-
+from django.core.mail import send_mail
 
 def home(request):
 	videos_ids = Video.objects.filter(is_showcase=True).values_list('id', flat=True)
@@ -201,8 +201,9 @@ class UserView(LoginRequiredMixin, CreateView):
 	def form_valid(self, form):
 		form.save(commit=False)
 		password = uuid.uuid1()
-		password = str(password.hex[0:6])
-		user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'], password=password)
+		password = str(password.hex[0:8])
+		user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'])
+		user.set_password(password)
 		profile = Profile.objects.get(id=user.id)
 		profile.user = user
 		profile.email = form.cleaned_data['email']
@@ -211,6 +212,54 @@ class UserView(LoginRequiredMixin, CreateView):
 		profile.type = form.cleaned_data['type']
 		profile.save()
 		return redirect('/manage')
+
+
+class CreateStudentView(LoginRequiredMixin, CreateView):
+	model = Profile
+	template_name = 'video/student_form.html'
+	form_class = UserForm
+	success_url = '/manage'
+
+	def get_initial(self, *args, **kwargs):
+		profile = Profile.objects.get(user= self.request.user)
+		if profile.type == 'A' or 'B':
+			initial = super(CreateStudentView, self).get_initial(**kwargs)
+			return initial
+		else:
+			HttpResponseRedirect('/')
+
+
+	def form_valid(self, form):
+		if User.objects.filter(username=form.cleaned_data['email']).exists():
+			return redirect('/error_user')
+		else:
+			program = Program.objects.get(id=self.kwargs['program_id'])
+			print(program)
+			form.save(commit=False)
+			password = uuid.uuid1()
+			password = str(password.hex[0:8])
+			user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'])
+			user.set_password(password)
+			program.students.add(user)
+			profile = Profile.objects.get(id=user.id)
+			profile.user = user
+			profile.email = form.cleaned_data['email']
+			profile.first_name = form.cleaned_data['first_name']
+			profile.last_name = form.cleaned_data['last_name']
+			profile.type = form.cleaned_data['type']
+			profile.program = program
+			profile.save()
+			try:
+				send_mail(
+					'Flagship Video Project: new account',
+					'A request has been received to create an account with your email. Your username is your email account. The password associated with your email is: ' + password + '\n',
+					[form.cleaned_data['email']],
+					settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD
+				)
+
+			except:
+				return redirect('/error_user')
+			return redirect('/manage')
 
 
 @login_required

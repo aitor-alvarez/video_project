@@ -1,0 +1,37 @@
+{% extends 'base2.html' %}
+{% load  video_tags %}
+
+{% block content %}
+{% if request.user.id|get_profile_type == 'A' or 'B' %}
+   <h3>Add New User</h3>
+    <br>
+<form action="." method="post">
+{% csrf_token %}
+{% for field in form %}
+{% if field.name == 'first_name' %}
+        <label>first name</label>
+    {{ field }}
+    <br>
+{% elif field.name == 'last_name' %}
+     <label>last name</label>
+    {{ field }}
+    <br>
+
+{% elif field.name == 'type' %}
+    <input type="hidden" value="C" name="type" id="id_type">
+
+ {% else %}
+    <label>{{ field.name }}</label>
+    {{ field }}
+    <br>
+{% endif %}
+    {% endfor %}
+<button type="submit">Submit</button>
+</form>
+{% else %}
+<div class="col-md-12">
+<h4>You do not have permission to access this page</h4>
+
+</div>
+{% endif %}
+{% endblock %}
