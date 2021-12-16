@@ -264,7 +264,7 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 				send_mail(
 					'Flagship Video Project: new account',
 					'A request has been received to create an account with your email. Your username is your email account.\n' + 'The password associated with your email is: ' + password + '\n',
-					settings.EMAIL_HOST_USER, [form.cleaned_data['email']])
+					'Flagship Video Project', [form.cleaned_data['email']])
 
 			except:
 				e = sys.exc_info()
