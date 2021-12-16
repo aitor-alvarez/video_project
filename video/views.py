@@ -268,7 +268,7 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 			except:
 				e = sys.exc_info()
 				print(e)
-				return redirect('/error_user')
+				return redirect('/error_email')
 			return redirect('/manage')
 
 
