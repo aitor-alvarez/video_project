@@ -213,6 +213,16 @@ class UserView(LoginRequiredMixin, CreateView):
 		profile.last_name = form.cleaned_data['last_name']
 		profile.type = form.cleaned_data['type']
 		profile.save()
+		try:
+			send_mail(
+				'Flagship Video Project: new account',
+				'A request has been received to create an account with your email. Your username is your email account. The password associated with your email is: ' + password + '\n',
+				settings.EMAIL_HOST_USER, [form.cleaned_data['email']], settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+
+		except:
+			e = sys.exc_info()
+			print(e)
+			return redirect('/error_user')
 		return redirect('/manage')
 
 
@@ -253,8 +263,8 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 			try:
 				send_mail(
 					'Flagship Video Project: new account',
-					'A request has been received to create an account with your email. Your username is your email account. The password associated with your email is: ' + password + '\n',
-					settings.EMAIL_HOST_USER, [form.cleaned_data['email']], settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD )
+					'A request has been received to create an account with your email. Your username is your email account.\n' + 'The password associated with your email is: ' + password + '\n',
+					settings.EMAIL_HOST_USER, [form.cleaned_data['email']])
 
 			except:
 				e = sys.exc_info()
