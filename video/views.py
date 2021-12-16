@@ -203,7 +203,8 @@ class UserView(LoginRequiredMixin, CreateView):
 		form.save(commit=False)
 		password = uuid.uuid1()
 		password = str(password.hex[0:8])
-		user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'])
+		user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'],
+		                           first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'])
 		user.set_password(password)
 		profile = Profile.objects.get(user=user)
 		profile.user = user
@@ -238,7 +239,7 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 			form.save(commit=False)
 			password = uuid.uuid1()
 			password = str(password.hex[0:8])
-			user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'])
+			user = User.objects.create(username=form.cleaned_data['email'], email=form.cleaned_data['email'], first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'])
 			user.set_password(password)
 			program.students.add(user)
 			profile = Profile.objects.get(user=user)

@@ -25,7 +25,6 @@
       <th scope="col">First Name</th>
       <th scope="col">Last Name</th>
       <th scope="col">Email</th>
-      <th scope="col">Institution</th>
 
     </tr>
   </thead>
@@ -35,8 +34,7 @@
     <tr>
       <td>{{ student.first_name }}</td>
       <td>{{ student.last_name }}</td>
-      <td>{{ student.user.email }}</td>
-      <td>{{ student.institution }}</td>
+      <td>{{ student.email }}</td>
     </tr>
   {% endfor %}
   </tbody>
