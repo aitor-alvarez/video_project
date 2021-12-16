@@ -21,6 +21,7 @@ from functools import reduce
 import operator
 from django.db.models import Q
 from django.core.mail import send_mail
+import sys
 
 def home(request):
 	videos_ids = Video.objects.filter(is_showcase=True).values_list('id', flat=True)
@@ -234,7 +235,6 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 			return redirect('/error_user')
 		else:
 			program = Program.objects.get(id=self.kwargs['program_id'])
-			print(program)
 			form.save(commit=False)
 			password = uuid.uuid1()
 			password = str(password.hex[0:8])
@@ -253,11 +253,11 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 				send_mail(
 					'Flagship Video Project: new account',
 					'A request has been received to create an account with your email. Your username is your email account. The password associated with your email is: ' + password + '\n',
-					[form.cleaned_data['email']],
-					settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD
-				)
+					settings.EMAIL_HOST_USER, [form.cleaned_data['email']], settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD )
 
 			except:
+				e = sys.exc_info()
+				print(e)
 				return redirect('/error_user')
 			return redirect('/manage')
 
