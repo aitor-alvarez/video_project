@@ -28,6 +28,7 @@ urlpatterns = [
 		path('edit-transcript/<int:video_id>/<str:lang>', edit_transcript),
 		path('programs/', list_programs),
 		path('error_user', TemplateView.as_view(template_name='video/error_user.html')),
+		path('error_email', TemplateView.as_view(template_name='video/error_email.html')),
 		path('ajax/search_user/', search_user, name='search_user'),
 		path('ajax/enroll_user/', enroll_user, name='enroll_user'),
 		path('archive/', archive_view),
