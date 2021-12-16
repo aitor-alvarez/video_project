@@ -37,11 +37,14 @@
         <input type="checkbox" name="is_internal" value="0" id="id_is_public">
         <br>
         <hr>
+
+
     {% else %}
       <div class="bmd-form-group">
         {{ field.label }}
         {{ field }}
       </div>
+        {{ field.value }}
     {% endif %}
 {% endfor %}
 <br>

@@ -36,6 +36,8 @@ class EventForm(ModelForm):
 		fields = '__all__'
 
 
+
+
 class UserForm(ModelForm):
 	email = forms.EmailField(required=True)
 	def __init__(self, *args, **kwargs):

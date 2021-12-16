@@ -146,14 +146,6 @@ class VideoView(LoginRequiredMixin, CreateView):
 		success_url = '/'
 		fields = ['is_public', 'is_internal', 'file', 'type', 'event']
 
-		def get_initial(self):
-			self.initial = super(VideoView, self).get_initial()
-			profile = Profile.objects.get(user=self.request.user)
-			programs = Program.objects.filter(students__in=[self.request.user]).values_list('id', flat=True)
-			events = Event.objects.filter(program__in=programs)
-			self.initial['events'] = events
-			return self.initial
-
 
 		def form_valid(self, form):
 			video_form = form.save(commit=False)
@@ -168,6 +160,13 @@ class VideoView(LoginRequiredMixin, CreateView):
 			video_form.title = profile.first_name+' '+profile.last_name
 			video_form.save()
 			return redirect('generate_video', video_id=video_form.id)
+
+		def get_initial(self, *args, **kwargs):
+			initial = super(VideoView, self).get_initial(*args, **kwargs)
+			programs = Program.objects.filter(students__in=[self.request.user]).values_list('id', flat=True)
+			events = Event.objects.filter(program__in=programs)
+			initial['event'] = events
+			return initial
 
 
 class ProgramView(LoginRequiredMixin, CreateView):
@@ -216,13 +215,13 @@ class UserView(LoginRequiredMixin, CreateView):
 		try:
 			send_mail(
 				'Flagship Video Project: new account',
-				'A request has been received to create an account with your email. Your username is your email account. The password associated with your email is: ' + password + '\n',
-				settings.EMAIL_HOST_USER, [form.cleaned_data['email']], settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+				'A request has been received to create an account with your email. Your username is your email address.\n' + 'The password associated with your email is: ' + password + '\n',
+				'Flagship Video Project', [form.cleaned_data['email']])
 
 		except:
 			e = sys.exc_info()
 			print(e)
-			return redirect('/error_user')
+			return redirect('/error_email')
 		return redirect('/manage')
 
 
@@ -263,7 +262,7 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 			try:
 				send_mail(
 					'Flagship Video Project: new account',
-					'A request has been received to create an account with your email. Your username is your email account.\n' + 'The password associated with your email is: ' + password + '\n',
+					'A request has been received to create an account with your email. Your username is your email address.\n' + 'The password associated with your email is: ' + password + '\n',
 					'Flagship Video Project', [form.cleaned_data['email']])
 
 			except:
