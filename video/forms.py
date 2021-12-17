@@ -3,8 +3,8 @@ from .models import *
 from django import forms
 from .models import video_types, phases
 
-class ConsentForm(ModelForm):
 
+class ConsentForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(ConsentForm, self).__init__(*args, **kwargs)
 		for name in self.fields.keys():
@@ -36,6 +36,19 @@ class EventForm(ModelForm):
 		fields = '__all__'
 
 
+
+class UploadVideo(ModelForm):
+
+	def __init__(self, *args, **kwargs):
+		super(UploadVideo, self).__init__(*args, **kwargs)
+		for name in self.fields.keys():
+			self.fields[name].widget.attrs.update({
+				'class': 'form-control',
+			})
+
+	class Meta:
+		model = Video
+		fields = ('is_public', 'is_internal', 'file', 'type', 'event',)
 
 
 class UserForm(ModelForm):

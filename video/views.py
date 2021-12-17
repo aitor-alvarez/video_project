@@ -22,6 +22,8 @@ import operator
 from django.db.models import Q
 from django.core.mail import send_mail
 import sys
+import mimetypes
+
 
 def home(request):
 	videos_ids = Video.objects.filter(is_showcase=True).values_list('id', flat=True)
@@ -143,8 +145,7 @@ def archive_view(request):
 class VideoView(LoginRequiredMixin, CreateView):
 		model = Video
 		template_name = 'video/video_form.html'
-		success_url = '/'
-		fields = ['is_public', 'is_internal', 'file', 'type', 'event']
+		form_class = UploadVideo
 
 
 		def form_valid(self, form):
@@ -159,7 +160,13 @@ class VideoView(LoginRequiredMixin, CreateView):
 			video_form.pid = pid
 			video_form.title = profile.first_name+' '+profile.last_name
 			video_form.save()
-			return redirect('generate_video', video_id=video_form.id)
+			mime = mimetypes.guess_type(str(video_form.file))
+			if 'video' in mime[0]:
+				return redirect('generate_video', video_id=video_form.id)
+			else:
+				video_form.delete()
+				os.remove(str(video_form.file))
+				return render(self.request, 'video/video_form.html', {'error': 'The mime type of the file is not video/mp4. Please upload the correct file type. '})
 
 		def get_initial(self, *args, **kwargs):
 			initial = super(VideoView, self).get_initial(*args, **kwargs)
@@ -520,6 +527,8 @@ def show_private_video(request, access_code):
 	return render(request, 'video/private_video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
 		                                            :translation_url, 'video_object': video})
 
+
+@login_required
 def edit_transcript(request, video_id, lang=None):
 	video = Video.objects.get(id=video_id)
 	s3_client = boto3.client('s3')
@@ -546,6 +555,7 @@ def edit_transcript(request, video_id, lang=None):
 	                                                 'video_url': video_url})
 
 
+@login_required
 def save_transcript_s3(request):
 	vtt, filename, lang = parse_vtt(request)
 	path = getattr(settings, "PATH", None)
@@ -563,6 +573,7 @@ def save_transcript_s3(request):
 	return JsonResponse(response)
 
 
+@login_required
 def save_translation_s3(request):
 	vtt, filename, lang = parse_vtt(request)
 	path = getattr(settings, "PATH", None)
@@ -580,7 +591,7 @@ def save_translation_s3(request):
 	return JsonResponse(response)
 
 
-
+@login_required
 def parse_vtt(request):
 	if request.is_ajax():
 		data = request.POST.getlist('requestData[]', [])
@@ -610,6 +621,7 @@ def parse_vtt(request):
 	return vtt, filename, lang
 
 
+@login_required
 def update_consent(request, video_id):
 	context = {}
 	obj = Video.objects.get(id=video_id)
@@ -624,6 +636,7 @@ def update_consent(request, video_id):
 	return render(request, "video/consent_update.html", context)
 
 
+@login_required
 def translate_vtt(request):
 	if request.is_ajax():
 		path = getattr(settings, "PATH", None)

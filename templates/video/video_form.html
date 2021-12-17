@@ -8,6 +8,10 @@
 <h2>Upload Video</h2>
 <br>
 <br>
+{% if error %}
+
+    {{ error }}
+{% else %}
 <form enctype="multipart/form-data" action="." method="POST">
 
 {% csrf_token %}
@@ -59,6 +63,7 @@
 <br>
 <button type="submit">Save</button>
 </form>
+    {% endif %}
 </div>
  <div id="progress">
         <h5 id="area-text">Video upload in progress...</h5>
