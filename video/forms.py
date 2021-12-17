@@ -49,7 +49,7 @@ class UserForm(ModelForm):
 
 	class Meta:
 		model = Profile
-		fields = ('first_name', 'last_name', 'email', 'type',)
+		fields = ('first_name', 'last_name', 'email', 'type', 'institution',)
 
 
 class FilterResultsForm(forms.Form):

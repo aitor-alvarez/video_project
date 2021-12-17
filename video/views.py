@@ -257,6 +257,8 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 			profile.first_name = form.cleaned_data['first_name']
 			profile.last_name = form.cleaned_data['last_name']
 			profile.type = form.cleaned_data['type']
+			profile.language = program.language
+			profile.institution = form.cleaned_data['institution']
 			profile.program = program
 			profile.save()
 			try:
