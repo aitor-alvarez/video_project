@@ -458,7 +458,7 @@ def show_video(request, video_id):
 	video = Video.objects.get(id=video_id)
 	profile = Profile(user=request.user)
 	s3 = boto3.resource('s3')
-	if profile.type == 'A' or profile.type == 'B' or video.is_public or video.owner == request.user :
+	if profile.type == 'A' or profile.type == 'B' or video.is_public or video.owner == profile:
 		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
 		if video.transcript_created == True:
 			try:
