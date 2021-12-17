@@ -38,6 +38,15 @@
         <br>
         <hr>
 
+{% elif field.name == 'event' %}
+    <div class="bmd-form-group">
+    Event
+    <select name="event" id="id_event" required>
+        {% for value in field.value %}
+            <option value="{{ value.id }}">{{ value }}</option>
+        {% endfor %}
+    </select>
+     </div>
 
     {% else %}
       <div class="bmd-form-group">
