@@ -215,7 +215,7 @@ class UserView(LoginRequiredMixin, CreateView):
 		try:
 			send_mail(
 				'Flagship Video Project: new account',
-				'A request has been received to create an account with your email. Your username is your email address.\n' + 'The password associated with your email is: ' + password + '\n',
+				'A request has been received to create an account with your email. Your username is your email address.\n' + 'Please, create your password using the following form: https://' + self.request.get_host() + '/accounts/password_reset/',
 				'Flagship Video Project', [form.cleaned_data['email']])
 
 		except:
@@ -264,7 +264,7 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 			try:
 				send_mail(
 					'Flagship Video Project: new account',
-					'A request has been received to create an account with your email. Your username is your email address.\n' + 'The password associated with your email is: ' + password + '\n',
+					'A request has been received to create an account with your email. Your username is your email address.\n' + 'Please, create your password using the following form: https://' + self.request.get_host() + '/accounts/password_reset/',
 					'Flagship Video Project', [form.cleaned_data['email']])
 
 			except:
