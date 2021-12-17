@@ -220,7 +220,6 @@ class UserView(LoginRequiredMixin, CreateView):
 
 		except:
 			e = sys.exc_info()
-			print(e)
 			return redirect('/error_email')
 		return redirect('/manage')
 
@@ -458,54 +457,45 @@ def show_video(request, video_id):
 	video = Video.objects.get(id=video_id)
 	s3 = boto3.resource('s3')
 	if video.is_public == True:
-		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid) + '.mp4')
-		if video.transcript_created == True:
-			try:
-				s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
-				transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt')
-			except botocore.exceptions.ClientError as e:
-				if e.response['Error']['Code'] == "404":
-					transcript_url = False
-		else:
-			transcript_url = None
-		try:
-			s3.Object('videos-techcenter', 'translations/' + str(video.pid) + '.vtt').load()
-			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
-		except botocore.exceptions.ClientError as e:
-			if e.response['Error']['Code'] == "404":
-				translation_url = False
+		video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
 		return render(request, 'video/video.html',
 		              {'video_url': video_url, 'transcript_url': transcript_url, 'translation_url'
 		              : translation_url, 'video_object': video})
 
-
 	elif video.is_public == False:
-		profile = Profile(user=request.user)
-		if profile.type == 'A' or profile.type == 'B' or video.is_public or video.owner == profile:
-			video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
-			if video.transcript_created == True:
-				try:
-					s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
-					transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt')
-				except botocore.exceptions.ClientError as e:
-					if e.response['Error']['Code'] == "404":
-						transcript_url = False
+		if request.user.is_authenticated:
+			profile = Profile(user=request.user)
+			if profile.type == 'A' or profile.type == 'B' or video.owner.user == profile.user:
+				video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
 
+				return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url':translation_url, 'video_object': video})
 			else:
-				transcript_url=None
-			try:
-				s3.Object('videos-techcenter', 'translations/' + str(video.pid) + '.vtt').load()
-				translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
-			except botocore.exceptions.ClientError as e:
-				if e.response['Error']['Code'] == "404":
-					translation_url = False
+				return render(request, 'video/video.html', {'error': True})
+		else:
+			return HttpResponseRedirect('/accounts/login/')
 
-		return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
-		                                            :translation_url, 'video_object': video})
+
+def get_video_s3(video, s3):
+	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid) + '.mp4')
+	if video.transcript_created == True:
+		try:
+			s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
+			transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt')
+		except botocore.exceptions.ClientError as e:
+			if e.response['Error']['Code'] == "404":
+				transcript_url = False
 	else:
-		return render(request, 'video/video.html', {'error': True})
+		transcript_url = None
+	try:
+		s3.Object('videos-techcenter', 'translations/' + str(video.pid) + '.vtt').load()
+		translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			translation_url = False
+	return video_url, transcript_url, translation_url, video
 
 
+@login_required
 def show_private_video(request, access_code):
 	s3 = boto3.resource('s3')
 	video = Video.objects.get(access_code=access_code)
