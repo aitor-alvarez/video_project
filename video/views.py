@@ -456,10 +456,9 @@ def extract_audio_and_transcript(request):
 
 def show_video(request, video_id):
 	video = Video.objects.get(id=video_id)
-	profile = Profile(user=request.user)
 	s3 = boto3.resource('s3')
-	if profile.type == 'A' or profile.type == 'B' or video.is_public or video.owner == profile:
-		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
+	if video.is_public == True:
+		video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid) + '.mp4')
 		if video.transcript_created == True:
 			try:
 				s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
@@ -467,15 +466,39 @@ def show_video(request, video_id):
 			except botocore.exceptions.ClientError as e:
 				if e.response['Error']['Code'] == "404":
 					transcript_url = False
-
 		else:
-			transcript_url=None
+			transcript_url = None
 		try:
 			s3.Object('videos-techcenter', 'translations/' + str(video.pid) + '.vtt').load()
 			translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
 		except botocore.exceptions.ClientError as e:
 			if e.response['Error']['Code'] == "404":
 				translation_url = False
+		return render(request, 'video/video.html',
+		              {'video_url': video_url, 'transcript_url': transcript_url, 'translation_url'
+		              : translation_url, 'video_object': video})
+
+
+	elif video.is_public == False:
+		profile = Profile(user=request.user)
+		if profile.type == 'A' or profile.type == 'B' or video.is_public or video.owner == profile:
+			video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
+			if video.transcript_created == True:
+				try:
+					s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
+					transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt')
+				except botocore.exceptions.ClientError as e:
+					if e.response['Error']['Code'] == "404":
+						transcript_url = False
+
+			else:
+				transcript_url=None
+			try:
+				s3.Object('videos-techcenter', 'translations/' + str(video.pid) + '.vtt').load()
+				translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
+			except botocore.exceptions.ClientError as e:
+				if e.response['Error']['Code'] == "404":
+					translation_url = False
 
 		return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url'
 		                                            :translation_url, 'video_object': video})
