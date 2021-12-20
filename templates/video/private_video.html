@@ -8,8 +8,9 @@
     <source type="video/mp4" src="{{ video_url }}" />
 
     <!-- Able Player will display tracks alphabetically by label -->
-
+{% if transcript_url %}
     <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.language|slice:'0:2' }}" label="{{ video_object.language.language }}"/>
+{% endif %}
       {% if translation_url %}
             <track kind="subtitles" src="{{ translation_url }}" srclang="en" label="English"/>
     {% endif %}
