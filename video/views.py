@@ -87,6 +87,28 @@ def my_videos(request):
 @login_required
 def archive_view(request):
 	form = FilterResultsForm()
+	profile = Profile.objects.get(user=request.user)
+	if profile.type == 'A':
+		videos = Video.objects.all()
+	elif profile.type == 'B':
+		videos = Video.objects.filter(is_internal=True)
+	elif profile.type == 'C':
+		return HttpResponse("<h3>You are not authorized to access this page.</h3>")
+
+	videos = [(v, get_s3_url('videos-techcenter', 'thumbs/' + str(v.pid) + '.jpg')) for v in videos]
+	page = request.GET.get('page', 1)
+	paginator = Paginator(videos, 20)
+	try:
+		video_page = paginator.page(page)
+	except PageNotAnInteger:
+		video_page = paginator.page(1)
+	except EmptyPage:
+		video_page = paginator.page(paginator.num_pages)
+	return render(request, 'video/archive.html', {'videos':video_page, 'form': form})
+
+
+def filtered_archive_view(request):
+	form = FilterResultsForm()
 	videos = Video.objects.all()
 	profile = Profile.objects.get(user=request.user)
 	if request.method =='POST':
@@ -98,7 +120,7 @@ def archive_view(request):
 		location = request.POST.get('location')
 		phase = request.POST.get('phase')
 		if program !=[]:
-			filters['event__program__language_id__in'] = [p for p in program]
+			filters['event__program__language_id__in'] = [int(p) for p in program]
 		if institution != '':
 			filters['owner__institution_id'] = institution
 		if type != '' :
@@ -132,14 +154,13 @@ def archive_view(request):
 	videos = [(v, get_s3_url('videos-techcenter', 'thumbs/' + str(v.pid) + '.jpg')) for v in videos]
 	page = request.GET.get('page', 1)
 	paginator = Paginator(videos, 20)
-
 	try:
 		video_page = paginator.page(page)
 	except PageNotAnInteger:
 		video_page = paginator.page(1)
 	except EmptyPage:
 		video_page = paginator.page(paginator.num_pages)
-	return render(request, 'video/archive.html', {'videos':video_page, 'form': form})
+	return render(request, 'video/archive.html', {'videos': video_page, 'form': form})
 
 
 class VideoView(LoginRequiredMixin, CreateView):
