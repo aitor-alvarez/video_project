@@ -57,7 +57,13 @@ def showcase_videos(request, video_id=None):
 		video = Video.objects.get(id=video_id)
 
 	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
-	transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
+	try:
+		s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
+		transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			transcript_url = None
+
 	try:
 		s3.Object('videos-techcenter', 'translations/' + str(video.pid)+'.vtt').load()
 		translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
