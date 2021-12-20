@@ -99,7 +99,7 @@ def archive_view(request):
 		phase = request.POST.get('phase')
 		if program !=[]:
 			filters['event__program__language_id__in'] = [p for p in program]
-		if institution != '' :
+		if institution != '':
 			filters['owner__institution_id'] = institution
 		if type != '' :
 			filters['type'] = type
