@@ -37,8 +37,9 @@
     <source type="video/mp4" src="{{ video_url }}" />
 
 {% if transcript_url %}
+    {{ video_object.event.program.language }}
     <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.event.program.language.language_code|slice:'0:2' }}" label="{{ video_object.event.program.language }}"/>
-  {% endif %}
+{% endif %}
       {% if translation_url %}
             <track kind="subtitles" src="{{ translation_url }}" srclang="en" label="English"/>
     {% endif %}
