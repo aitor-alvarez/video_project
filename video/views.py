@@ -528,16 +528,13 @@ def show_private_video(request, access_code):
 	s3 = boto3.resource('s3')
 	video = Video.objects.get(access_code=access_code)
 	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
-	if video.transcript_created == True:
-			try:
-				s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
-				transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt')
-			except botocore.exceptions.ClientError as e:
-				if e.response['Error']['Code'] == "404":
-					transcript_url = False
+	try:
+		s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
+		transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			transcript_url = False
 
-	else:
-		transcript_url=None
 	try:
 		s3.Object('videos-techcenter', 'translations/' + str(video.pid) + '.vtt').load()
 		translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
