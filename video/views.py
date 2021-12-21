@@ -499,9 +499,13 @@ def show_video(request, video_id):
 	elif video.is_public == False:
 		if request.user.is_authenticated:
 			profile = Profile(user=request.user)
-			if profile.type == 'A' or profile.type == 'B' or video.owner.user == profile.user:
+			if profile.type == 'A' or video.owner.user == profile.user:
 				video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
-
+				return render(request, 'video/video.html',
+				              {'video_url': video_url, 'transcript_url': transcript_url, 'translation_url': translation_url,
+				               'video_object': video})
+			elif  profile.type == 'B' and video.is_internal == True:
+				video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
 				return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url':translation_url, 'video_object': video})
 			else:
 				return render(request, 'video/video.html', {'error': True})
