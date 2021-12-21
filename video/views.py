@@ -498,7 +498,7 @@ def show_video(request, video_id):
 
 	elif video.is_public == False:
 		if request.user.is_authenticated:
-			profile = Profile(user=request.user)
+			profile = Profile.objects.get(user=request.user)
 			if profile.type == 'A' or video.owner.user == profile.user:
 				video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
 				return render(request, 'video/video.html',
