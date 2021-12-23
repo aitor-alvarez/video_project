@@ -132,7 +132,7 @@ def filtered_archive_view(request):
 			filters['type'] = type
 		if year !=[]:
 			query = reduce(operator.or_, ((Q(event__program__start__gte=datetime.date(year=int(y), month=1, day=1 )) & Q(event__program__end__lte=datetime.date(year=int(y), month=12, day=31 )))
-			                              or (Q(event__program__start__gte=datetime.date(year=int(y), month=8, day=1 )) & Q(event__program__end__lte=datetime.date(year=int(y), month=7, day=31 )))for y in year) )
+			                              or (Q(event__program__start__gte=datetime.date(year=int(y), month=7, day=30 )) & Q(event__program__end__lte=datetime.date(year=int(y), month=6, day=30 )))for y in year) )
 		else:
 			query = Q(event__program__start__gte=datetime.date(year=int(2018), month=1, day=1 )) & Q(event__program__end__lte=datetime.date(year=int(2040), month=12, day=31 ))
 
