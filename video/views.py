@@ -120,6 +120,7 @@ def filtered_archive_view(request):
 		program = request.POST.getlist('program')
 		institution = request.POST.get('institution')
 		year = request.POST.getlist('year')
+		print(year)
 		type = request.POST.get('type')
 		location = request.POST.get('location')
 		phase = request.POST.get('phase')
@@ -141,6 +142,7 @@ def filtered_archive_view(request):
 
 		if profile.type == 'A':
 			videos = Video.objects.filter(query).filter(**filters)
+			print(videos)
 		elif profile.type == 'B':
 			videos = Video.objects.filter(query).filter(**filters, is_internal=True)
 		elif profile.type == 'C':
