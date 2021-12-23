@@ -143,7 +143,6 @@ def filtered_archive_view(request):
 
 		if profile.type == 'A':
 			videos = Video.objects.filter(query).filter(**filters)
-			print(videos)
 		elif profile.type == 'B':
 			videos = Video.objects.filter(query).filter(**filters, is_internal=True)
 		elif profile.type == 'C':
