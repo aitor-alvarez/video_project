@@ -115,7 +115,6 @@ def archive_view(request):
 
 def filtered_archive_view(request):
 	form = FilterResultsForm()
-	videos = Video.objects.all()
 	profile = Profile.objects.get(user=request.user)
 	if request.method =='POST':
 		filters = {}
