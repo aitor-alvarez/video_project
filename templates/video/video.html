@@ -10,7 +10,7 @@
 
     {% else %}
         {% csrf_token %}
-{% if request.user == video_object.owner.user %}
+{% if request.user == video_object.owner %}
 <div class="col-md-12 text-right">
 {% if video_object.transcript_completed and not video_object.translation_created %}
 <button id="transcript_trans" type="button" class="btn btn-success ">Translate</button>

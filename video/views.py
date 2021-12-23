@@ -85,8 +85,7 @@ def showcase_videos(request, video_id=None):
 
 @login_required
 def my_videos(request):
-	profile = Profile.objects.get(user=request.user)
-	videos = Video.objects.filter(owner=profile)
+	videos = Video.objects.filter(owner=request.user)
 	return render(request, 'video/my_videos.html', {'my_videos':  videos})
 
 
@@ -180,7 +179,7 @@ class VideoView(LoginRequiredMixin, CreateView):
 			program = video_form.event.program
 			language = program.language.language_code
 			video_form.access_code = pid
-			video_form.owner = profile
+			video_form.owner = self.request.user
 			video_form.language = language
 			video_form.pid = pid
 			video_form.title = profile.first_name+' '+profile.last_name
@@ -396,7 +395,7 @@ def generate_video(request, video_id):
 	if video.is_final or video.transcript_created:
 		return HttpResponseRedirect('/my-videos/')
 	else:
-		if profile == video.owner:
+		if request.user == video.owner:
 			if video.is_final == False:
 				return render(request, 'video/generate_video.html', {'video': video})
 			else:
@@ -497,7 +496,7 @@ def show_video(request, video_id):
 	elif video.is_public == False:
 		if request.user.is_authenticated:
 			profile = Profile.objects.get(user=request.user)
-			if profile.type == 'A' or video.owner.user == profile.user:
+			if profile.type == 'A' or video.owner == request.user:
 				video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
 				return render(request, 'video/video.html',
 				              {'video_url': video_url, 'transcript_url': transcript_url, 'translation_url': translation_url,
