@@ -91,7 +91,7 @@ class Program(models.Model):
 		return events
 
 	def __str__(self):
-		return self.language.language+" Flagship Program"
+		return self.language.language+" Flagship Program "+"("+str(self.end.year)+")"
 
 
 class Event(models.Model):
