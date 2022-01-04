@@ -96,7 +96,7 @@ def archive_view(request):
 	if profile.type == 'A':
 		videos = Video.objects.all()
 	elif profile.type == 'B':
-		videos = Video.objects.filter(is_internal=True)
+		videos = Video.objects.filter(Q(is_internal=True) | Q(is_public=True))
 	elif profile.type == 'C':
 		return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 
@@ -120,7 +120,6 @@ def filtered_archive_view(request):
 		program = request.POST.getlist('program')
 		institution = request.POST.get('institution')
 		year = request.POST.getlist('year')
-		print(year)
 		type = request.POST.get('type')
 		location = request.POST.get('location')
 		phase = request.POST.get('phase')
@@ -143,7 +142,7 @@ def filtered_archive_view(request):
 		if profile.type == 'A':
 			videos = Video.objects.filter(query).filter(**filters)
 		elif profile.type == 'B':
-			videos = Video.objects.filter(query).filter(**filters, is_internal=True)
+			videos = Video.objects.filter(query).filter(Q(is_internal=True) | Q(is_public=True), **filters)
 		elif profile.type == 'C':
 			return HttpResponse("<h3>You are not authorized to access this page.</h3>")
 	elif request.method == 'GET':
@@ -300,7 +299,6 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 
 			except:
 				e = sys.exc_info()
-				print(e)
 				return redirect('/error_email')
 			return redirect('/manage')
 
