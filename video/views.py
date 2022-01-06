@@ -126,7 +126,8 @@ def filtered_archive_view(request):
 		if program !=[]:
 			filters['event__program__language_id__in'] = [int(p) for p in program]
 		if institution != '':
-			filters['owner__institution_id'] = institution
+			owners = Profile.objects.filter(institution = institution).values_list('id', flat=True)
+			filters['owner__in'] = list(owners)
 		if type != '' :
 			filters['type'] = type
 		if year !=[]:
