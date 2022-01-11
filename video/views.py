@@ -589,7 +589,7 @@ def save_transcript_s3(request):
 		s3_upload_file_to_bucket(path+'uploads/transcript/' + filename+'.vtt', 'videos-techcenter', 'transcripts/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
-		os.remove('./uploads/transcript/'+filename+'.vtt')
+		#os.remove('./uploads/transcript/'+filename+'.vtt')
 		response = {
 				'msg': 'The file has been saved correctly'}
 	except botocore.exceptions.ClientError as error:
@@ -607,7 +607,7 @@ def save_translation_s3(request):
 		s3_upload_file_to_bucket(path+'uploads/translation/' + filename+'.vtt', 'videos-techcenter', 'translations/' + filename+'.vtt',
 			                         {'ContentType': 'text/vtt', 'pid': filename,
 			                          'access_code': filename, 'language':lang})
-		os.remove('../uploads/translation/'+filename+'.vtt')
+		#os.remove('../uploads/translation/'+filename+'.vtt')
 		response = {
 				'msg': 'The file has been saved correctly'}
 	except:
@@ -681,10 +681,10 @@ def translate_vtt(request):
 				                         {'ContentType': 'text/vtt', 'language': 'en'})
 				video.translation_created = True
 				video.save()
-				os.remove(path+'uploads/translation/' + filename)
-				os.remove(path+'uploads/transcript/' + filename)
 				response = {
 					'msg': 'The translation was processed correctly.'}
+				os.remove(path + 'uploads/translation/' + filename)
+				os.remove(path + 'uploads/transcript/' + filename)
 				return JsonResponse(response)
 
 		except:
