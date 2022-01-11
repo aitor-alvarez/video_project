@@ -145,8 +145,9 @@ def generate_translation(vtt, lang):
 		if isinstance(vtt[i], str):
 			pass
 		else:
-			new_txt = translate_text(vtt[i].text, lang)
-			new_vtt.captions.append(Caption(vtt[i].start, vtt[i].end, new_txt))
+			if vtt[i].text !='':
+				new_txt = translate_text(vtt[i].text, lang)
+				new_vtt.captions.append(Caption(vtt[i].start, vtt[i].end, new_txt))
 	return new_vtt
 
 
