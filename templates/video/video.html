@@ -26,7 +26,7 @@
         <br>
 <div class="row">
 <div class="col-md-5 ">
-  <video id="video1" preload="auto" width="480" height="480" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="false" data-transcript-div="transcript" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
+  <video id="video1" preload="auto" width="480" height="480" poster="/static/ableplayer/media/wwa.jpg" data-include-transcript="false" data-descriptions-audible="false" data-transcript-div="transcript" data-able-player data-skin="2020" data-meta-type="selector" playsinline>
     <source type="video/mp4" src="{{ video_url }}" />
 {% if transcript_url %}
     <track kind="captions" src="{{ transcript_url }}" srclang="{{ video_object.event.program.language.language_code|slice:'0:2' }}" label="{{ video_object.event.program.language }}"/>
