@@ -488,10 +488,10 @@ def show_video(request, video_id):
 	video = Video.objects.get(id=video_id)
 	s3 = boto3.resource('s3')
 	if video.is_public == True:
-		video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
+		video_url, transcript_url, translation_url, video, descriptions = get_video_s3(video, s3)
 		return render(request, 'video/video.html',
 		              {'video_url': video_url, 'transcript_url': transcript_url, 'translation_url'
-		              : translation_url, 'video_object': video})
+		              : translation_url, 'video_object': video, 'descriptions_url': descriptions})
 
 	elif video.is_public == False:
 		if request.user.is_authenticated:
