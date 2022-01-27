@@ -497,13 +497,14 @@ def show_video(request, video_id):
 		if request.user.is_authenticated:
 			profile = Profile.objects.get(user=request.user)
 			if profile.type == 'A' or video.owner == request.user:
-				video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
+				video_url, transcript_url, translation_url, video, descriptions = get_video_s3(video, s3)
 				return render(request, 'video/video.html',
 				              {'video_url': video_url, 'transcript_url': transcript_url, 'translation_url': translation_url,
-				               'video_object': video})
+				               'video_object': video, 'descriptions_url': descriptions})
 			elif  profile.type == 'B' and video.is_internal == True:
-				video_url, transcript_url, translation_url, video = get_video_s3(video, s3)
-				return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url':translation_url, 'video_object': video})
+				video_url, transcript_url, translation_url, video, descriptions = get_video_s3(video, s3)
+				return render(request, 'video/video.html', {'video_url': video_url, 'transcript_url':transcript_url, 'translation_url':translation_url, 'video_object': video,
+				                                            'descriptions_url': descriptions})
 			else:
 				return render(request, 'video/video.html', {'error': True})
 		else:
@@ -527,7 +528,13 @@ def get_video_s3(video, s3):
 	except botocore.exceptions.ClientError as e:
 		if e.response['Error']['Code'] == "404":
 			translation_url = False
-	return video_url, transcript_url, translation_url, video
+	try:
+		s3.Object('videos-techcenter', 'descriptions/' + str(video.pid)+'.vtt').load()
+		descriptions = get_s3_url('videos-techcenter', 'descriptions/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			descriptions = None
+	return video_url, transcript_url, translation_url, video, descriptions
 
 
 @login_required

@@ -34,6 +34,9 @@
       {% if translation_url %}
             <track kind="subtitles" src="{{ translation_url }}" srclang="en" label="English"/>
     {% endif %}
+  {% if descriptions_url %}
+            <track id="descriptionTrack" kind="descriptions" src="{{ descriptions_url}}"/>
+    {% endif %}
   </video>
 </div>
 
