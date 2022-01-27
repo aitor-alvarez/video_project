@@ -31,7 +31,7 @@ def home(request):
 	videos_showcase = Video.objects.filter(id__in=videos_showcase_ids)
 	if request.user.is_authenticated:
 		profile = Profile.objects.get(user=request.user)
-		if (profile.type == 'A' or profile.type == 'B') and profile.terms_of_use is not True:
+		if profile.terms_of_use is not True:
 			return HttpResponseRedirect('/terms')
 		else:
 			return render(request, 'video/home.html', {'videos': videos_showcase})
