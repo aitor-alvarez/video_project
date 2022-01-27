@@ -1,0 +1,91 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="col-md-12">
+<h2>Terms of Use and Privacy Policy</h2>
+<br>
+<br>
+<p>If you have any questions, please contact the Language Flagship Technology Innovation Center at tech.center@hawaii.edu.</p>
+<form enctype="multipart/form-data" action="." method="POST">
+
+{% csrf_token %}
+
+<h2><strong>Terms of Use</strong></h2>
+        <br>
+        <p>These terms of use are effective as of October 6, 2021. Please read these Terms of Use ("Terms", "Terms of Use") carefully before using the Flagship Video Project website
+            (the "Service") operated by the Language Flagship Technology Innovation Center ("Tech Center") at the University of Hawaii Manoa (https://video.thelanguageflagship.tech/).  </p>
+       <p>
+        Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users, and others who access or use the Service.
+       </p>
+        <p>
+            By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service.
+        </p>
+        <br>
+
+        <h3><strong>Content and Use of Materials</strong></h3>
+        <br>
+        <p>The content housed on the Flagship Video Project contains both public and private videos. Public videos are licensed under the following Creative Commons license:</p>
+
+        <p><a href="https://video.thelanguageflagship.tech">Language Flagship Videos</a> © 2021 by the <a href="https://thelanguageflagship.tech">Language Flagship Technology Innovation Center</a> is licensed
+            under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1">Attribution-NonCommercial-NoDerivatives 4.0 International</a></p>
+
+        <p>Private videos are videos which the students have given permission to be displayed internally within the Flagship community, US government employees or contracted employees on a need-to-know basis.
+            Access to private videos is a privilege that can be revoked if the user is in violation of any of the Terms. Private videos are subject to these terms:</p>
+        <ol>
+        <li>Private videos may be used for educational purposes only;</li>
+        <li>Private videos are not to be used for research purposes without approval from the University of Hawaii Institutional Research Board;</li>
+        <li>Making copies of private videos and distributing them in any way beyond the Flagship community, US government employees or contracted employees is not allowed.</li>
+        </ol>
+        <br>
+
+        <h3><strong>Termination</strong></h3>
+        <br>
+        <p>The Tech Center may terminate or suspend access to this Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation, if you breach the Terms.
+            All provisions of the Terms which by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnity and limitations of liability.</p>
+        <br>
+        <hr>
+        <h2><strong>Privacy Policy</strong></h2>
+        <br>
+        <p>The Language Flagship Technology Innovation Center (Tech Center) houses the Flagship Video Project (FVP) as a free service. This Service is provided by the Tech Center at no cost and is intended for use as is.
+        No warranty is provided with respect to the quality or accuracy of the contents of the Service. If you choose to use our Service, you agree to the collection and use of information in relation to this policy as described here.
+        The Personal Information that is collected is used for providing and improving the Service. The Tech Center will not use or share your information with anyone except as described in this document.</p>
+        <br>
+
+        <h3><strong>Information Collection and Use</strong></h3>
+        <br>
+
+        <p>For a better experience, while using our Service, the Tech Center may require you to provide us with personally identifiable information, including but not limited to Email and first and last name.
+            The information that the Tech Center requests will be retained on its servers.</p>
+        <br>
+        <h3><strong>Cookies</strong></h3>
+        <br>
+
+        <p>Cookies are files with a small amount of data that are commonly used as anonymous unique identifiers. These are sent to your browser from the websites that you visit and are stored on your device's internal memory.</p>
+        <p>This Service does not use these “cookies” explicitly. However, the website may use third party code and libraries that use "cookies" to collect information and improve their services.
+            You have the option to either accept or refuse these cookies and know when a cookie is being sent to your device. If you choose to refuse our cookies, you may not be able to use some portions of this Service.
+        </p>
+        <br>
+        <h3><strong>Links to Other Sites</strong></h3>
+        <br>
+        <p>This Service may contain links to other sites. If you click on a third-party link, you will be directed to that site. Note that these external sites are not operated by the Tech Center.
+            Therefore, you are strongly advised you to review the Privacy Policy of these websites.
+            The Tech Center has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.</p>
+        <br>
+        <h3><strong>Changes to This Privacy Policy</strong></h3>
+        <br>
+        <p>The Tech Center reserves the right to update this Policy at any time.</p>
+        <br>
+        <br>
+        <p>I agree to the above stated Terms of Use and conditions:</p>
+        {% for field in form %}
+            {{ field }}
+        {% endfor %}
+
+        <br>
+        <br>
+
+<button type="submit">Submit</button>
+</form>
+</div>
+
+{% endblock %}

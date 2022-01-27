@@ -112,6 +112,17 @@ def archive_view(request):
 	return render(request, 'video/archive.html', {'videos':video_page, 'form': form})
 
 
+@login_required
+def update_terms(request):
+	form = TermsForm()
+	if request.method == 'POST':
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/')
+	elif request.method == 'GET':
+		return render(request, 'video/terms.html', {'form': form})
+
+
 def filtered_archive_view(request):
 	form = FilterResultsForm()
 	profile = Profile.objects.get(user=request.user)
@@ -698,4 +709,3 @@ def translate_vtt(request):
 			response = {
 				'msg': 'The file was not translated correctly. Please try again.'}
 			return JsonResponse(response)
-

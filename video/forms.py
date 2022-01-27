@@ -110,3 +110,16 @@ class FilterResultsForm(forms.Form):
 				self.fields[name].widget.attrs.update({
 				'class': 'form-control',
 			})
+
+
+class TermsForm(ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(TermsForm, self).__init__(*args, **kwargs)
+		for name in self.fields.keys():
+			self.fields[name].widget.attrs.update({
+				'class': 'form-control',
+			})
+
+	class Meta:
+		model = Profile
+		fields = ('terms_of_use',)

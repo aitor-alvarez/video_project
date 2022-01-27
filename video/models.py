@@ -39,6 +39,7 @@ class Profile(models.Model):
 	language = models.ForeignKey('Language', blank=True,  null=True, on_delete=models.CASCADE)
 	program = models.ForeignKey('Program', blank=True,  null=True, on_delete=models.CASCADE)
 	institution = models.ForeignKey('Institution', blank=True, null=True, on_delete=models.CASCADE)
+	terms_of_use = models.BooleanField(default=0)
 
 	def __str__(self):
 		return self.user.username
