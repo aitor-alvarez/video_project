@@ -29,7 +29,14 @@ def home(request):
 	videos_ids = Video.objects.filter(is_showcase=True).values_list('id', flat=True)
 	videos_showcase_ids = random.sample(list(videos_ids), min(len(videos_ids), 3))
 	videos_showcase = Video.objects.filter(id__in=videos_showcase_ids)
-	return render(request, 'video/home.html', {'videos':  videos_showcase})
+	if request.user.is_authenticated:
+		profile = Profile.objects.get(user=request.user)
+		if (profile.type == 'A' or profile.type == 'B') and profile.terms_of_use is not True:
+			return HttpResponseRedirect('/terms')
+		else:
+			return render(request, 'video/home.html', {'videos': videos_showcase})
+	else:
+		return render(request, 'video/home.html', {'videos':  videos_showcase})
 
 
 @login_required
@@ -116,7 +123,12 @@ def archive_view(request):
 def update_terms(request):
 	form = TermsForm()
 	if request.method == 'POST':
+		profile = Profile.objects.get(user=request.user)
+		print(request.POST)
+		form = TermsForm(request.POST, instance=profile)
 		if form.is_valid():
+			form.save(commit=False)
+			form.terms_of_use = 1
 			form.save()
 			return HttpResponseRedirect('/')
 	elif request.method == 'GET':

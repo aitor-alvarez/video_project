@@ -1,5 +1,6 @@
 from django import template
 from video.models import Profile, Program
+from django.http import HttpResponseRedirect
 
 
 register = template.Library()

@@ -6,7 +6,7 @@
 <br>
 <br>
 <p>If you have any questions, please contact the Language Flagship Technology Innovation Center at tech.center@hawaii.edu.</p>
-<form enctype="multipart/form-data" action="." method="POST">
+<form action="" method="POST">
 
 {% csrf_token %}
 
@@ -76,15 +76,21 @@
         <p>The Tech Center reserves the right to update this Policy at any time.</p>
         <br>
         <br>
-        <p>I agree to the above stated Terms of Use and conditions:</p>
         {% for field in form %}
-            {{ field }}
+            <fieldset>
+            <label for="id_terms_of_use"><strong>I agree to the above stated Terms of Use and conditions:</strong></label>
+            {% if field.value  %}
+        <input type="checkbox" name="terms_of_use" value="1" id="id_terms_of_use" checked>
+        {% else %}
+            <input type="checkbox" name="terms_of_use" value="0" id="id_terms_of_use">
+        {% endif %}
+            </fieldset>
         {% endfor %}
 
         <br>
         <br>
 
-<button type="submit">Submit</button>
+<button type="submit">Agree</button>
 </form>
 </div>
 
