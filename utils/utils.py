@@ -108,10 +108,12 @@ def generate_vtt_caption(speech_txt_response, lang, bin=7):
 						previous_word_end_microsec = result.alternatives[0].words[i].end_time.seconds
 
 						# append bin transcript
-						init_sec = '0'+str(datetime.timedelta( seconds=start_sec))+'.000'
-						end_sec = '0'+str(datetime.timedelta( seconds=previous_word_end_sec))+'.000'
-						vtt.captions.append(Caption(init_sec, end_sec, transcript))
-
+						if datetime.timedelta( seconds=start_sec) < datetime.timedelta( seconds=previous_word_end_sec):
+							init_sec = '0'+str(datetime.timedelta( seconds=start_sec))+'.000'
+							end_sec = '0'+str(datetime.timedelta( seconds=previous_word_end_sec))+'.000'
+							vtt.captions.append(Caption(init_sec, end_sec, transcript))
+						else:
+							continue
 						# reset bin parameters
 						start_sec = word_start_sec
 						start_microsec = word_start_microsec
