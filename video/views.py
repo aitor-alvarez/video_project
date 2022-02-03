@@ -261,11 +261,13 @@ class UserView(LoginRequiredMixin, CreateView):
 		                           first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'])
 		user.set_password(password)
 		profile = Profile.objects.get(user=user)
+		institution = Institution.objects.filter(name =form.cleaned_data['institution'])[0]
 		profile.user = user
 		profile.email = form.cleaned_data['email']
 		profile.first_name = form.cleaned_data['first_name']
 		profile.last_name = form.cleaned_data['last_name']
 		profile.type = form.cleaned_data['type']
+		profile.institution = institution
 		profile.save()
 		try:
 			send_mail(
