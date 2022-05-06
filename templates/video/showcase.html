@@ -7,7 +7,7 @@
           <form action="." method="POST">
           {% csrf_token %}
               <div class="form-group">
-                <label for="exampleFormControlSelect1">Select Video</label>
+                <label for="exampleFormControlSelect1">Click below to select a video</label>
                 <select onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" class="form-control" id="FormControlSelect1">
                     <option value="0" data-lang="0">Select</option>
                     {% for video in videos %}
