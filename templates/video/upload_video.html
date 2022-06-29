@@ -20,10 +20,18 @@
         </div>
 
         {% else %}
+        {% if field.name == 'file' %}
         <div class="form-group">
+            <label>Video File</label>
+            <input type="file" name="file" class="form-control" required="" id="id_file" >
+        </div>
+        {% else %}
+        <div class="form-group">
+
             <label>{{ field.name }}</label>
             {{ field }}
         </div>
+            {% endif %}
         {% endif %}
     {% endfor %}
     <input name="language" type="hidden" value="{{ program.language.language_code }}" />
@@ -63,5 +71,7 @@ var csrftoken = $("[name=csrfmiddlewaretoken]").val();
         })
     })
 })
+
+
 </script>
 {% endblock javascript %}

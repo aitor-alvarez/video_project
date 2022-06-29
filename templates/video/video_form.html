@@ -51,7 +51,11 @@
         {% endfor %}
     </select>
      </div>
-
+{% elif field.name == 'file' %}
+        <div class="bmd-form-group">
+            Video File
+            <input type="file" name="file" class="form-control" id="id_file"  onchange="CheckFileSize()" required>
+        </div>
     {% else %}
       <div class="bmd-form-group">
         {{ field.label }}
@@ -85,5 +89,26 @@
       $('#progress').show(450);
   });
 });
+
+//File size check
+    function CheckFileSize(){
+    const  video_file = document.getElementById('id_file');
+    if (video_file.files.length >0){
+        for (i = 0; i <= video_file.files.length - 1; i++) {
+
+                const fsize = video_file.files.item(i).size;
+                const file = Math.round((fsize / 1024));
+                console.log(file)
+                if (file >= 716800) {
+                    alert(
+                      "The file is too large, we recommend uploading video files that are less than 700 MB");
+                } else if (file < 3048) {
+                    alert(
+                      "The file is too small, please check that the file is the correct one");
+                }
+            }
+    }
+
+}
 </script>
 {% endblock %}

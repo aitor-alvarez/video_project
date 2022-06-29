@@ -38,6 +38,7 @@ class EventForm(ModelForm):
 
 
 class UploadVideo(ModelForm):
+	file = forms.FileField(required=True)
 
 	def __init__(self, *args, **kwargs):
 		super(UploadVideo, self).__init__(*args, **kwargs)
