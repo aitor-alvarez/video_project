@@ -180,7 +180,7 @@ def filtered_archive_view(request):
 
 	videos = [(v, get_s3_url('videos-techcenter', 'thumbs/' + str(v.pid) + '.jpg')) for v in videos]
 	page = request.GET.get('page', 1)
-	paginator = Paginator(videos, 20)
+	paginator = Paginator(videos, 200)
 	try:
 		video_page = paginator.page(page)
 	except PageNotAnInteger:
