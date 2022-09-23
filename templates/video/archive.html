@@ -120,6 +120,12 @@
                                 {% else %}
                                     <span class="badge badge-pill badge-danger">Public</span>
                                 {% endif %}
+
+                                {% if video.0.is_final %}
+                                    <span class="badge badge-pill badge-info">Final</span>
+                                {% else %}
+                                    <span class="badge badge-pill badge-warning ">Not Final</span>
+                                {% endif %}
                                 </div>
                         </div>
                 <br>
