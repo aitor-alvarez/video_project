@@ -407,7 +407,7 @@ def enroll_user(request):
 def program_detail(request, program_id):
 	profile = Profile.objects.get(user=request.user)
 	if profile.type == 'A' or profile.type == 'B':
-		program = Program.objects.get(id=program_id).order_by('owner')
+		program = Program.objects.get(id=program_id)
 		return render(request, 'video/program_detail.html', {'program': program, 'profile': profile})
 	else:
 		HttpResponseRedirect('/')
@@ -419,7 +419,7 @@ def video_status(request, program_id):
 	if profile.type == 'A' or profile.type == 'B':
 		events = Event.objects.filter(program=program_id)
 		program = Program.objects.get(id=program_id)
-		videos = Video.objects.filter(event__in=events)
+		videos = Video.objects.filter(event__in=events).order_by('owner')
 		return render(request, 'video/video_status.html', {'videos': videos, 'program': program})
 	else:
 		HttpResponseRedirect('/')
