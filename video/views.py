@@ -414,6 +414,18 @@ def program_detail(request, program_id):
 
 
 @login_required
+def video_status(request, program_id):
+	profile = Profile.objects.get(user=request.user)
+	if profile.type == 'A' or profile.type == 'B':
+		events = Event.objects.filter(program=program_id)
+		program = Program.objects.get(id=program_id)
+		videos = Video.objects.filter(event__in=events)
+		return render(request, 'video/video_status.html', {'videos': videos, 'program': program})
+	else:
+		HttpResponseRedirect('/')
+
+
+@login_required
 def generate_video(request, video_id):
 	video = Video.objects.get(id=video_id)
 	profile = Profile.objects.get(user=request.user)

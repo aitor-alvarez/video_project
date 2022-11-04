@@ -38,6 +38,7 @@ urlpatterns = [
 		path('ajax/save_translation/', save_translation_s3, name='save_translation'),
 		path('ajax/translate_transcript/', translate_vtt, name='translate'),
 		path('program/<int:program_id>/', program_detail, name='program_detail'),
+		path('video_status/<int:program_id>/', video_status, name='video_status'),
 		path('generate/<int:video_id>/', generate_video, name='generate_video'),
 		path('update_consent/<int:video_id>/', update_consent, name='update_consent')
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

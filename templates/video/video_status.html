@@ -1,0 +1,36 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="col-md-12">
+
+<hr>
+<div id="students">
+<a href="/program/{{ program.id }}/"><button type="button" class="btn btn-success ">Return to program details</button></a>
+<h4><strong>Videos Uploaded ({{ program }}):</strong></h4>
+
+ <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Student</th>
+      <th scope="col">Event</th>
+      <th scope="col">Status</th>
+
+    </tr>
+  </thead>
+  <tbody>
+<hr>
+{% for video in videos %}
+    <tr>
+      <td>{{ video.owner.profile.first_name }} {{ video.owner.profile.last_name }}</td>
+      <td>{{ video.event }}</td>
+      <td>{%  if video.is_final == 0 %} Final {% else %} Not final {% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+
+</div>
+</div>
+
+{% endblock %}
