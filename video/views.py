@@ -407,7 +407,7 @@ def enroll_user(request):
 def program_detail(request, program_id):
 	profile = Profile.objects.get(user=request.user)
 	if profile.type == 'A' or profile.type == 'B':
-		program = Program.objects.get(id=program_id)
+		program = Program.objects.get(id=program_id).order_by('owner')
 		return render(request, 'video/program_detail.html', {'program': program, 'profile': profile})
 	else:
 		HttpResponseRedirect('/')
