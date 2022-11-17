@@ -112,6 +112,33 @@ class FilterResultsForm(forms.Form):
 			})
 
 
+class FilterShowcaseForm(forms.Form):
+	years =(('', '--------'), ('2018', 2018), ('2019',2019), ('2020', 2020), ('2021', 2021), ('2022', 2022), ('2023', 2023), ('2024',2024))
+
+
+	language = forms.ModelChoiceField(
+				widget=forms.SelectMultiple,
+        queryset=Language.objects.all(), required=False)
+
+
+	year = forms.ChoiceField(
+				widget=forms.SelectMultiple,
+        choices= years, required=False
+	)
+
+	def __init__(self, *args, **kwargs):
+		super(FilterShowcaseForm, self).__init__(*args, **kwargs)
+		for name in self.fields.keys():
+			if name == 'year' or name == 'language':
+				self.fields[name].widget.attrs.update({
+					'class': 'selectpicker',
+				})
+			else:
+				self.fields[name].widget.attrs.update({
+				'class': 'form-control',
+			})
+
+
 class TermsForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(TermsForm, self).__init__(*args, **kwargs)

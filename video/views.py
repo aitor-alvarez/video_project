@@ -26,17 +26,14 @@ import mimetypes
 
 
 def home(request):
-	videos_ids = Video.objects.filter(is_showcase=True).values_list('id', flat=True)
-	videos_showcase_ids = random.sample(list(videos_ids), min(len(videos_ids), 3))
-	videos_showcase = Video.objects.filter(id__in=videos_showcase_ids)
 	if request.user.is_authenticated:
 		profile = Profile.objects.get(user=request.user)
 		if profile.terms_of_use is not True:
 			return HttpResponseRedirect('/terms')
 		else:
-			return render(request, 'video/home.html', {'videos': videos_showcase})
+			return render(request, 'video/home.html')
 	else:
-		return render(request, 'video/home.html', {'videos':  videos_showcase})
+		return render(request, 'video/home.html')
 
 
 @login_required
@@ -89,6 +86,78 @@ def showcase_videos(request, video_id=None):
 	                                               'translation_url': translation_url, 'descriptions_url': descriptions,
 	                                               'video_object': video })
 
+def showcase_videos2(request, video_id=None):
+	s3 = boto3.resource('s3')
+	videos = Video.objects.filter(is_showcase=True)
+	if video_id is None:
+		video = videos[0]
+	else:
+		video = Video.objects.get(id=video_id)
+
+	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid)+'.mp4')
+	try:
+		s3.Object('videos-techcenter', 'transcripts/' + str(video.pid) + '.vtt').load()
+		transcript_url = get_s3_url('videos-techcenter', 'transcripts/' + str(video.pid)+'.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			transcript_url = None
+
+	try:
+		s3.Object('videos-techcenter', 'translations/' + str(video.pid)+'.vtt').load()
+		translation_url = get_s3_url('videos-techcenter', 'translations/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			translation_url = None
+
+	try:
+		s3.Object('videos-techcenter', 'descriptions/' + str(video.pid)+'.vtt').load()
+		descriptions = get_s3_url('videos-techcenter', 'descriptions/' + str(video.pid) + '.vtt')
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			descriptions = None
+
+	return render(request, 'video/showcase2.html', {'videos':videos,'video_url': video_url, 'transcript_url':transcript_url,
+	                                               'translation_url': translation_url, 'descriptions_url': descriptions,
+	                                               'video_object': video })
+
+def showcase_view(request):
+	form = FilterShowcaseForm()
+	if request.method =='POST':
+		filters = {}
+		language = request.POST.getlist('language')
+		year = request.POST.getlist('year')
+		filters['is_showcase'] = True
+		if language !=[]:
+			filters['event__program__language_id__in'] = [int(l) for l in language]
+		if year !=[]:
+			query = reduce(operator.or_, (Q(event__program__end__gte=datetime.date(year=int(y), month=1, day=1 )) & Q(event__program__end__lte=datetime.date(year=int(y), month=12, day=31 )) for y in year))
+		else:
+			query = Q(event__program__start__gte=datetime.date(year=int(2018), month=1, day=1 )) & Q(event__program__end__lte=datetime.date(year=int(2040), month=12, day=31 ))
+
+		showcase_videos = Video.objects.filter(query).filter(**filters)
+		videos = [(v, get_s3_url('videos-techcenter', 'thumbs/' + str(v.pid) + '.jpg')) for v in showcase_videos]
+		page = request.GET.get('page', 1)
+		paginator = Paginator(videos, 300)
+		try:
+			video_page = paginator.page(page)
+		except PageNotAnInteger:
+			video_page = paginator.page(1)
+		except EmptyPage:
+			video_page = paginator.page(paginator.num_pages)
+		return render(request, 'video/showcase_filter.html', {'videos': video_page, 'form': form})
+	else :
+		showcase_videos = Video.objects.filter(is_showcase=True)
+		videos = [(v, get_s3_url('videos-techcenter', 'thumbs/' + str(v.pid) + '.jpg')) for v in showcase_videos]
+		page = request.GET.get('page', 1)
+		paginator = Paginator(videos, 300)
+		try:
+			video_page = paginator.page(page)
+		except PageNotAnInteger:
+			video_page = paginator.page(1)
+		except EmptyPage:
+			video_page = paginator.page(paginator.num_pages)
+		return render(request, 'video/showcase_filter.html', {'videos': video_page, 'form': form})
+
 
 @login_required
 def my_videos(request):
@@ -135,6 +204,7 @@ def update_terms(request):
 		return render(request, 'video/terms.html', {'form': form})
 
 
+@login_required
 def filtered_archive_view(request):
 	form = FilterResultsForm()
 	profile = Profile.objects.get(user=request.user)

@@ -1,0 +1,103 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="row">
+          <div class="col-sm-12 ml-auto mr-auto">
+              <h2 class="text-center title">Showcase Videos</h2>
+          <br>
+          <br>
+          <div class="row">
+           <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                Filters
+            </a>
+
+          </div>
+          <div class="row">
+            <div class="collapse" id="collapseExample">
+              <article class="card-group-item">
+              <br>
+                  <br>
+                  <form id="filter_results" action="{% url 'showcase_view' %}" method="POST">
+                      {% csrf_token %}
+                  <div class="row">
+                        {% for field in form %}
+                            <br>
+
+                        {% if field.name == 'language'  %}
+                            <div class="col-md-4">
+                            <span data-toggle="tooltip" data-placement="top" title="Language" class="material-icons">help</span>
+                                <label>{{ field.name }}</label>
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                            <br>
+
+                         {% if field.name == 'year'%}
+
+                            <div class="col-sm-4">
+                            <span data-toggle="tooltip" data-placement="top" title="Program's year" class="material-icons">help</span>
+                                <label>{{ field.name }}</label>
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                            <br>
+                      {% endfor %}
+                  </div>
+                  <input type="submit" class="float-md-right" value="Submit" />
+                  </form>
+
+              </article>
+            </div>
+          </div>
+          <hr>
+          <br>
+            {% for video in videos %}
+                <div class="col-md-10 ml-auto mr-auto">
+              <div class="card">
+                            <div class="card-header card-header-text card-header-primary">
+                                <div class="card-text">
+                                    <h4 class="card-title">{{ video.0.owner.first_name }} {{ video.0.owner.last_name }} | {{ video.0.event }} {{ video.0.event.program.get_program_years_display }} {{ video.0.event.program.end |date:"Y" }}</h4>
+                                </div>
+                            </div>
+                                <div class="card-body">
+                                {% if video.0.thumb_created is True %}
+                                <p><img class="img-thumbnail float-md-right" src="{{ video.1 }}" alt="Card image cap"></p>
+                                {% else %}
+                                <p><img class="img-thumbnail float-md-right" src="/static/img/wwa2.jpg" alt="Card image cap"></p>
+                                {% endif %}
+                                    <p><i class="material-icons">language</i> {{ video.0.event.program.language.language }}</p>
+                                    <p><i class="material-icons">place</i> {{ video.0.event.city }}, {{ video.0.event.country }}</p>
+                                     <p><i class="material-icons">timer</i> {{ video.0.duration }}</p>
+                                {% if video.0.is_internal or video.0.is_public %}
+                                    <p><i class="material-icons">link</i><a href="/showcase2/{{ video.0.id }}">View showcase video</a></p>
+                                {% else %}
+                                    <p><i class="material-icons">link</i><a href="https://{{ request.get_host }}/video/{{ video.0.access_code }}">Private url</a></p>
+                                    {% endif %}
+
+                                </div>
+                        </div>
+                <br>
+</div>
+          {% endfor %}
+<div class="col-sm-12 ml-auto mr-auto">
+          {% if videos.has_other_pages %}
+  <ul class="pagination pagination-primary">
+    {% if videos.has_previous %}
+        <a href="?page={{ videos.previous_page_number }}" class="page-link"><button>Previous Page</button></a>
+    {% endif %}
+    {% if videos.has_next %}
+        <a href="?page={{ videos.next_page_number }}" class="page-link"><button>Next Page</button></a>
+    {% endif %}
+  </ul>
+{% endif %}
+</div>
+          </div>
+</div>
+
+{% endblock %}
+{% block javascript %}
+
+<script src="/static/js/bootstrap-select.js"></script>
+
+
+{% endblock %}

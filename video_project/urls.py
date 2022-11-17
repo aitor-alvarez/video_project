@@ -10,6 +10,8 @@ urlpatterns = [
 		path('about/', TemplateView.as_view(template_name='video/about.html')),
 		path('showcase/', showcase_videos),
 		path('showcase/<int:video_id>', showcase_videos),
+		path('showcase2/', showcase_view, name='showcase_view'),
+		path('showcase2/<int:video_id>', showcase_videos2),
 		path('my-videos/', my_videos),
 		path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
