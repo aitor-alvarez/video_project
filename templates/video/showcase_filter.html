@@ -68,11 +68,8 @@
                                     <p><i class="material-icons">language</i> {{ video.0.event.program.language.language }}</p>
                                     <p><i class="material-icons">place</i> {{ video.0.event.city }}, {{ video.0.event.country }}</p>
                                      <p><i class="material-icons">timer</i> {{ video.0.duration }}</p>
-                                {% if video.0.is_internal or video.0.is_public %}
+
                                     <p><i class="material-icons">link</i><a href="/showcase2/{{ video.0.id }}">View showcase video</a></p>
-                                {% else %}
-                                    <p><i class="material-icons">link</i><a href="https://{{ request.get_host }}/video/{{ video.0.access_code }}">Private url</a></p>
-                                    {% endif %}
 
                                 </div>
                         </div>
