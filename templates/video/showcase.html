@@ -11,7 +11,7 @@
                 <select onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" class="form-control" id="FormControlSelect1">
                     <option value="0" data-lang="0">Select</option>
                     {% for video in videos %}
-                        <option value="/showcase/{{ video.id }}" data-lang="{{ video.event.program.language.language_code}}">{{ video.owner.first_name }} {{ video.owner.last_name }} ({{ video.event.program.language}}, {{ video.event.end |date:"Y" }})</option>
+                        <option value="/showcase/{{ video.id }}" data-lang="{{ video.event.program.language.language_code}}">{{ video.title }} ({{ video.event.program.language}}, {{ video.event.end |date:"Y" }})</option>
                     {% endfor %}
                 </select>
               </div>
