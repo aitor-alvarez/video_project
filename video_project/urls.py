@@ -14,7 +14,7 @@ urlpatterns = [
 		path('showcase/<int:video_id>', showcase_videos2),
 		path('my-videos/', my_videos),
 		path('accounts/', include('django.contrib.auth.urls')),
-    path('admin/', admin.site.urls),
+    	path('admin/', admin.site.urls),
 		path('new/program/', ProgramView.as_view()),
 		path('video/<int:video_id>/', show_video),
 		path('video/<str:access_code>/', show_private_video),

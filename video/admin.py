@@ -1,7 +1,15 @@
 from django.contrib import admin
 from .models import *
+from django.contrib import admin
 
-admin.site.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    model = Profile
+    exclude = []
+    search_fields = ['first_name', 'last_name', 'email']
+
+
+
+admin.site.register(ProfileAdmin)
 admin.site.register(Video)
 admin.site.register(Program)
 admin.site.register(Event)
