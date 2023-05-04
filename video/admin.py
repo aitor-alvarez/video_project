@@ -10,8 +10,15 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ['first_name', 'last_name', 'email']
 
 
+class VideoAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Video
+        exclude = []
+    search_fields = ['title', 'pid']
+
+
 admin.site.register(Profile, ProfileAdmin)
-admin.site.register(Video)
+admin.site.register(Video, VideoAdmin)
 admin.site.register(Program)
 admin.site.register(Event)
 admin.site.register(Language)
