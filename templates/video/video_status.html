@@ -23,7 +23,7 @@
     <tr>
       <td>{{ video.owner.profile.first_name }} {{ video.owner.profile.last_name }}</td>
       <td>{{ video.event }}</td>
-      <td>{%  if video.is_final == 0 %} Final {% else %} Not final {% endif %}</td>
+      <td>{%  if video.is_final == 0 %} Not Final {% else %} Final {% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>
