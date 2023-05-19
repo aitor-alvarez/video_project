@@ -644,7 +644,7 @@ def get_video_s3(video, s3):
 	return video_url, transcript_url, translation_url, video, descriptions
 
 
-@login_required
+
 def show_private_video(request, access_code):
 	s3 = boto3.resource('s3')
 	video = Video.objects.get(access_code=access_code)
