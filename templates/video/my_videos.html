@@ -26,7 +26,7 @@
                                     <span><i class="material-icons">language</i> {{ video.event.program.language.language }}</span>
                                     <p><i class="material-icons">link</i><a href="/video/{{ video.id }}">View video</a></p>
                                     {% if video.is_public == False %}
-                                    <p><i class="material-icons">link</i><a href="http://{{ request.get_host }}/video/{{ video.access_code }}/">Private url</a></p>
+                                    <p><i class="material-icons">link</i><a href="https://{{ request.get_host }}/video/{{ video.access_code }}/">Private url</a></p>
                                     {% endif %}
                                     {% if video.transcript_created is True %}
                                     <p><i class="material-icons">timer</i> {{ video.duration }}</p>
