@@ -754,7 +754,7 @@ def parse_vtt(request):
 			caption = Caption(
 				d['start'],
 				d['end'],
-				d['text']
+				d['text'].strip()
 			)
 			vtt.captions.append(caption)
 	return vtt, filename, lang
