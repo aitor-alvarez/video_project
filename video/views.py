@@ -678,7 +678,7 @@ def edit_transcript(request, video_id, lang=None):
 	elif lang == 'en':
 		s3_response_object = s3_client.get_object(Bucket='videos-techcenter',
 		                                          Key='translations/' + video.pid + '.vtt')
-		file_content = s3_response_object['Body'].read()
+		file_content = s3_response_object['Body'].read().strip()
 		transcript_file = webvtt.read_buffer(StringIO(file_content.decode()))
 
 	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid) + '.mp4')
