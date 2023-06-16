@@ -674,12 +674,11 @@ def edit_transcript(request, video_id, lang=None):
 	if lang == None:
 		s3_response_object = s3_client.get_object(Bucket='videos-techcenter', Key='transcripts/' + video.pid+'.vtt')
 		file_content = s3_response_object['Body'].read()
-		file_content = file_content.strip()
 		transcript_file = webvtt.read_buffer(StringIO(file_content.decode()))
 	elif lang == 'en':
 		s3_response_object = s3_client.get_object(Bucket='videos-techcenter',
 		                                          Key='translations/' + video.pid + '.vtt')
-		file_content = s3_response_object['Body'].read().strip()
+		file_content = s3_response_object['Body'].read()
 		transcript_file = webvtt.read_buffer(StringIO(file_content.decode()))
 
 	video_url = get_s3_url('videos-techcenter', 'videos/' + str(video.pid) + '.mp4')
@@ -688,7 +687,7 @@ def edit_transcript(request, video_id, lang=None):
 		vtt_file = {}
 		vtt_file['start'] = caption.start
 		vtt_file['end'] = caption.end
-		vtt_file['text'] = caption.text
+		vtt_file['text'] = caption.text.strip()
 		output.append(vtt_file)
 
 	return render(request, 'video/video_edit.html', {'video': video, 'output':output,
