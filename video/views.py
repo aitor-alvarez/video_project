@@ -538,8 +538,13 @@ def extract_audio_and_transcript(request):
 		video_file = request.POST.get('video_file', None)
 		language = request.POST.get('language', None)
 		access_code = request.POST.get('access_code', None)
-		audio_file, duration = extract_audio_from_video(video_file.split('/')[-1])
-		audio_file_name = audio_file.split('/')[-1]
+		try:
+			audio_file, duration = extract_audio_from_video(video_file.split('/')[-1])
+			audio_file_name = audio_file.split('/')[-1]
+		except:
+			response = {
+				'msg': 'The video file has some errors and audio could not be extracted.'}
+			return JsonResponse(response)
 		video = Video.objects.get(id=video_id)
 		video.duration = duration
 		video.save()
