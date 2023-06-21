@@ -543,7 +543,7 @@ def extract_audio_and_transcript(request):
 			audio_file_name = audio_file.split('/')[-1]
 		except Exception as e:
 			response = {
-				'msg': 'The video file has some errors and audio could not be extracted. Error: '+str(e)}
+				'msg': 'The video file has an error and audio could not be extracted. Error: '+str(e)}
 			return JsonResponse(response)
 		video = Video.objects.get(id=video_id)
 		video.duration = duration
