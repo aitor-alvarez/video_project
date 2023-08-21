@@ -24,14 +24,15 @@
   <tbody>
 <hr>
 {% for video in videos %}
+
     <tr>
       <td>{{ video.owner.profile.first_name }} {{ video.owner.profile.last_name }}</td>
       <td>{{ video.event }}</td>
       <td>{%  if video.is_final == 0 %} Not Final {% else %} Final {% endif %}</td>
-        <td>{%  if video.is_private == 0 %} No {% elif video.is_private == 1 %} Yes {% endif %}</td>
+        <td>{%  if video.is_public == 0 %} No {% elif video.is_public == 1 %} Yes {% endif %}</td>
         <td>{%  if video.is_internal == 0 %} No {% else %} Yes {% endif %}</td>
-        <td>{%  if video.is_private == 0 %}<a href="/video/{{ video.id }}/">Link</a>
-        {% elif video.is_private == 1 %}
+        <td>{%  if video.is_public == 0 %}<a href="/video/{{ video.id }}/">Link</a>
+        {% elif video.is_public == 1 %}
             <a href="/video/{{ video.access_code }}/">Private link</a>
         {% endif %}</td>
     </tr>
