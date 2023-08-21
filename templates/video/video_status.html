@@ -16,6 +16,7 @@
       <th scope="col">Status</th>
       <th scope="col">Private</th>
       <th scope="col">Internal</th>
+      <th scope="col">URL</th>
 
 
     </tr>
@@ -29,6 +30,9 @@
       <td>{%  if video.is_final == 0 %} Not Final {% else %} Final {% endif %}</td>
         <td>{%  if video.is_private == 0 %} No {% else %} Yes {% endif %}</td>
         <td>{%  if video.is_internal == 0 %} No {% else %} Yes {% endif %}</td>
+        <td>{%  if video.is_private == 0 %}<a href="/video/{{ video.id }}/">Link</a>{% else %}
+            <a href="/video/{{ video.access_code }}/">Private link</a>
+        {% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>
