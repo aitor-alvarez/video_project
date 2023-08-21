@@ -14,6 +14,9 @@
       <th scope="col">Student</th>
       <th scope="col">Event</th>
       <th scope="col">Status</th>
+      <th scope="col">Private</th>
+      <th scope="col">Internal</th>
+
 
     </tr>
   </thead>
@@ -24,6 +27,8 @@
       <td>{{ video.owner.profile.first_name }} {{ video.owner.profile.last_name }}</td>
       <td>{{ video.event }}</td>
       <td>{%  if video.is_final == 0 %} Not Final {% else %} Final {% endif %}</td>
+        <td>{%  if video.is_private == 0 %} No {% else %} Yes {% endif %}</td>
+        <td>{%  if video.is_internal == 0 %} No {% else %} Yes {% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>
