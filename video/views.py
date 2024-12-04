@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
 from utils.utils import *
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
@@ -343,7 +344,7 @@ class UserView(LoginRequiredMixin, CreateView):
 			send_mail(
 				'Flagship Video Project: new account',
 				'A request has been received to create an account with your email. Your username is your email address.\n' + 'Please, create your password using the following form: https://' + self.request.get_host() + '/accounts/password_reset/',
-				'Flagship Video Project', [form.cleaned_data['email']])
+				'Flagship Video Project', settings.DEFAULT_FROM_EMAIL, [form.cleaned_data['email']])
 
 		except:
 			print(sys.exc_info())
@@ -391,7 +392,7 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 				send_mail(
 					'Flagship Video Project: new account',
 					'A request has been received to create an account with your email. Your username is your email address.\n' + 'Please, create your password using the following form: https://' + self.request.get_host() + '/accounts/password_reset/',
-					'Flagship Video Project', [form.cleaned_data['email']])
+					'Flagship Video Project', settings.DEFAULT_FROM_EMAIL, [form.cleaned_data['email']])
 
 			except:
 				print(sys.exc_info())
