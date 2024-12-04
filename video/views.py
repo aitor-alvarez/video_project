@@ -346,7 +346,7 @@ class UserView(LoginRequiredMixin, CreateView):
 				'Flagship Video Project', [form.cleaned_data['email']])
 
 		except:
-			e = sys.exc_info()
+			print(sys.exc_info())
 			return redirect('/error_email')
 		return redirect('/manage')
 
@@ -394,7 +394,7 @@ class CreateStudentView(LoginRequiredMixin, CreateView):
 					'Flagship Video Project', [form.cleaned_data['email']])
 
 			except:
-				e = sys.exc_info()
+				print(sys.exc_info())
 				return redirect('/error_email')
 			return redirect('/manage')
 
