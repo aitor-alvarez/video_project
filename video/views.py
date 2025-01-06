@@ -693,7 +693,7 @@ def edit_transcript(request, video_id, lang=None):
 		vtt_file = {}
 		vtt_file['start'] = caption.start
 		vtt_file['end'] = caption.end
-		vtt_file['text'] = caption.text.strip()
+		vtt_file['text'] = ''.join(caption.text.strip().splitlines())
 		output.append(vtt_file)
 
 	return render(request, 'video/video_edit.html', {'video': video, 'output':output,
@@ -760,7 +760,7 @@ def parse_vtt(request):
 			caption = Caption(
 				d['start'],
 				d['end'],
-				d['text'].strip()
+				''.join(d['text'].strip().splitlines())
 			)
 			vtt.captions.append(caption)
 	return vtt, filename, lang
