@@ -439,7 +439,7 @@ def list_programs(request):
 
 @login_required
 def search_user(request):
-	if request.is_ajax():
+	if request.headers.get("x-requested-with") == "XMLHttpRequest":
 		email = request.POST.get('email', None)
 		program_id = request.POST.get('program_id', None)
 		try:
@@ -458,7 +458,7 @@ def search_user(request):
 
 @login_required
 def enroll_user(request):
-	if request.is_ajax():
+	if request.headers.get("x-requested-with") == "XMLHttpRequest":
 		profile_id = request.POST.get('profile_id', None)
 		program_id = request.POST.get('program_id', None)
 		try:
@@ -517,7 +517,7 @@ def generate_video(request, video_id):
 @login_required
 def upload_video_s3(request):
 	path = getattr(settings, "PATH", None)
-	if request.is_ajax():
+	if request.headers.get("x-requested-with") == "XMLHttpRequest":
 		id = request.POST.get('id', None)
 		video = Video.objects.get(id=id)
 		try:
@@ -534,7 +534,7 @@ def upload_video_s3(request):
 @login_required
 def extract_audio_and_transcript(request):
 	path = getattr(settings, "PATH", None)
-	if request.is_ajax():
+	if request.headers.get("x-requested-with") == "XMLHttpRequest":
 		video_id = request.POST.get('video_id', None)
 		video_file = request.POST.get('video_file', None)
 		language = request.POST.get('language', None)
@@ -738,7 +738,7 @@ def save_translation_s3(request):
 
 @login_required
 def parse_vtt(request):
-	if request.is_ajax():
+	if request.headers.get("x-requested-with") == "XMLHttpRequest":
 		data = request.POST.getlist('requestData[]', [])
 		filename = request.POST.get('file')
 		lang = request.POST.get('lang')
@@ -783,7 +783,7 @@ def update_consent(request, video_id):
 
 @login_required
 def translate_vtt(request):
-	if request.is_ajax():
+	if request.headers.get("x-requested-with") == "XMLHttpRequest":
 		path = getattr(settings, "PATH", None)
 		filename = request.POST.get('file')
 		lang = request.POST.get('lang')
