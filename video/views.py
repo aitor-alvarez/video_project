@@ -24,7 +24,10 @@ from django.db.models import Q
 from django.core.mail import send_mail
 import sys
 import mimetypes
+from django.conf import settings
 
+os.environ['AWS_ACCESS_KEY_ID']=getattr(settings, "AWS_ACCESS_KEY_ID", None)
+os.environ['AWS_SECRET_ACCESS_KEY']=getattr(settings, "AWS_SECRET_ACCESS_KEY", None)
 
 def home(request):
 	if request.user.is_authenticated:
