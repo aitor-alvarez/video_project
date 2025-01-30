@@ -12,7 +12,7 @@ import botocore
 
 import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= getattr(settings, "GCLOUD_CREDS", None)
-os.environ['AWS_PROFILE'] = "default"
+
 
 def process_speech_to_txt(path, lang):
 	client = speech.SpeechClient()
